@@ -1,19 +1,23 @@
 ---
-title: "Introduction"
+title: "Instruction"
 author: "Scapeler"
 date: "1-7-2018"
 output: html_document
 ---
 
-## Introductie
+## Hoe werkt het
+Het proces bestaat uit twee drie hoofdonderdelen, een voor het selecteren van een periode waarover de validatie of kalibratie uitgevoerd dient te worden, een voor het selecteren van een of meer sensoren en ophalen van meetdata, en het laatste hoofdonderdeel waarin de validatie en/of kalibratie procedures worden uitgevoerd.
 
-Let op! Deze applicatie is in ontwikkeling en nog niet functioneel.
+### Stap 1 - selecteer een periode
+Dit is de eerste stap waarin wordt gekozen over welke periode de validatie of kalibratie wordt uitgevoerd.
 
-De validatie en kalibratie van sensoren is niet eenvoudig. Deze applicatie probeert de processen die daarvoor nodig zijn te ondersteunen. 
-
+### Stap 2 - selecteer de sensor en haal de meetdata op
 Voor het selecteren van een sensor en ophalen van de data voor een bepaalde periode kies je het onderdeel 'Sensor' in het keuzescherm bovenin deze pagina.
 
+### Stap 3 - Validatie
 Met de opgevraagde meetdata worden de validate en kalibratie procedures uitgevoerd. Zie daarvoor de overeenkomstige onderdelen in het hoofdmenu bovenin deze pagina.
+
+### Stap 4 - Kalibratie
 
 ## Sensor selectie en ophalen meetdata
 
@@ -28,13 +32,3 @@ Voor een bepaalde periode en sensor wordt de meetdata opgehaald en komen daarmee
 
 ### Referentie sensor
 Vergelijken doe je met een referentie sensor. Een referentiesensor is een sensor waarvan je uitgaat dat die betrouwbare meetwaarden aflevert zoals een sensor van het officiele luchtmeetnet. Is deze niet beschikbaar dan kies je voor een sensor welke gekalibreerd is. 
-
-## OGC/SOS standaard
-Deze applicatie is gebouwd bovenop een basis van een OGC/SOS web-services. In dit geval een implementatie van 52-North. Voor de toepassing van de OGC/SOS standaard wordt in hoofdlijnen de volgende vertaling toegepast:
-
-* project -> offering ( een project kan in principe meerdere 'offerings' bevatten )
-
-* unit -> feature of interest
-
-* sensor -> observable property
-

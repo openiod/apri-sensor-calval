@@ -80,8 +80,15 @@ sensorBody <- dashboardBody(
 #dashboardPage(header, sidebar, body)
 navbarPage("OpenIoD.org"
   , tabPanel("Introductie",
-             includeMarkdown(paste(getwd(),"/www/md/introduction.Rmd",sep=''))
-  )           
+      tabsetPanel(
+        id = 'panels',
+          tabPanel("Introductie", {
+            includeMarkdown(paste(getwd(),"/www/md/introduction.Rmd",sep=''))
+            })
+          , tabPanel("Instructie", {
+          includeMarkdown(paste(getwd(),"/www/md/instruction.Rmd",sep=''))
+        })
+      ))
   , tabPanel("sensor", sensorBody)
   , tabPanel("Kalibratie")
   , tabPanel("Validatie")

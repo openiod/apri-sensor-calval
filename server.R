@@ -101,6 +101,36 @@ function(input, output,session) {
       #addMarkers(data = points())
   })
   
+  ## client messaging about timezone
+  timeZoneInfo<-NULL #global var for timeZone info $serverPosix,$serverTimeZone,$clientPosix,$clientTimeZone,
+  triggerClientTime <- function(session=shiny::getDefaultReactiveDomain()){
+    serverTime <- Sys.time()
+    serverTimeZone <- as.integer(strftime(serverTime,"%z"))/100
+    session$sendCustomMessage(
+      type="getClientTime",
+      message=list(
+        serverPosix = as.numeric(serverTime),
+        serverTimeZone = serverTimeZone
+      )
+    )
+  }
+  
+  # Observe and print time (zone) from client and server
+  observe({ 
+    #print(input$clientTime)
+    timeZoneInfo<<-input$clientTime
+    #print(timeZoneInfo$serverPosix)
+    #print(timeZoneInfo$serverTimeZone)
+    #print(timeZoneInfo$clientPosix)
+    #print(timeZoneInfo$clientTimeZone)
+    tzDiff<-timeZoneInfo$serverPosix-timeZoneInfo$clientPosix
+    lag<- timeZoneInfo$serverTimeZone-timeZoneInfo$clientTimeZone
+    print(paste('clientlag: ',tzDiff))
+    print(paste('timzone diff server vs client: ',lag))
+  })
+  # Ask the client for current time and time zone (hours from UTC)
+  triggerClientTime()
+  
   
   print('end of server')
   "end of server"

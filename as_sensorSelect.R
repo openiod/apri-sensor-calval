@@ -353,23 +353,5 @@ tmpFunction <- function() {
     )
   })
   
-  
-  # Observe and print time from client and server
-  observe({ 
-    #print(input$clientTime)
-    timeZoneInfo<<-input$clientTime
-    #print(timeZoneInfo$serverPosix)
-    #print(timeZoneInfo$serverTimeZone)
-    #print(timeZoneInfo$clientPosix)
-    #print(timeZoneInfo$clientTimeZone)
-    tzDiff<-timeZoneInfo$serverPosix-timeZoneInfo$clientPosix
-    lag<- timeZoneInfo$serverTimeZone-timeZoneInfo$clientTimeZone
-    print(paste('clientlag: ',tzDiff))
-    print(paste('timzone diff server vs client: ',lag))
-  })
-  # Ask the client for current time and time zone (hours from UTC)
-  triggerClientTime()
-  
-  
 
 }

@@ -189,16 +189,3 @@ sensors <- list(
 , "apri-sensor-ds18b20-temperature"=c("een"="een")
 )
 
-## client messaging about timezone
-timeZoneInfo<-NULL #global var for timeZone info $serverPosix,$serverTimeZone,$clientPosix,$clientTimeZone,
-triggerClientTime <- function(session=shiny::getDefaultReactiveDomain()){
-  serverTime <- Sys.time()
-  serverTimeZone <- as.integer(strftime(serverTime,"%z"))/100
-  session$sendCustomMessage(
-    type="getClientTime",
-    message=list(
-      serverPosix = as.numeric(serverTime),
-      serverTimeZone = serverTimeZone
-    )
-  )
-}
