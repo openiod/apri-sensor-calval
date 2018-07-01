@@ -30,6 +30,9 @@ Vergelijken doe je met een referentie sensor. Een referentiesensor is een sensor
 ## OGC/SOS standaard
 Deze applicatie is gebouwd bovenop een basis van een OGC/SOS web-services. In dit geval een implementatie van 52-North. Voor de toepassing van de OGC/SOS standaard wordt in hoofdlijnen de volgende vertaling toegepast:
 
-..* project -> offering ( een project kan in principe meerdere 'offerings' bevatten )
-..* unit -> feature of interest
-..* sensor -> observable property
+* project -> offering ( een project kan in principe meerdere 'offerings' bevatten )
+
+* unit -> feature of interest
+
+* sensor -> observable property
+
