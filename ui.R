@@ -39,7 +39,7 @@ header <- dashboardHeader(
 sidebar <- dashboardSidebar(
   tags$head(tags$style(HTML(mycss)))
   # include the message.js script so the JavaScript knows the custom message handler we have written
-#  , includeScript(paste(getwd(),"/www/js/ApriSensor.js",sep=''))
+  , includeScript(paste(getwd(),"/www/js/ApriSensor.js",sep=''))
     
   , actionButton("processButton", "Verwerk")
   , p("Klik op de knop om de selectie te verwerken.")
