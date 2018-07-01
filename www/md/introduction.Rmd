@@ -1,0 +1,35 @@
+---
+title: "Introduction"
+author: "Scapeler"
+date: "1-7-2018"
+output: html_document
+---
+
+## Introductie
+
+De validatie en kalibratie van sensoren is niet eenvoudig. Deze applicatie probeert de processen die daarvoor nodig zijn te ondersteunen. 
+
+Voor het selecteren van een sensor en ophalen van de data voor een bepaalde periode kies je het onderdeel 'Sensor' in het keuzescherm bovenin deze pagina.
+
+Met de opgevraagde meetdata worden de validate en kalibratie procedures uitgevoerd. Zie daarvoor de overeenkomstige onderdelen in het hoofdmenu bovenin deze pagina.
+
+## Sensor selectie en ophalen meetdata
+
+### Periode
+Een validatie of kalibratie wordt uitgevoerd op basis van meetresultaten van een bepaalde periode. Een eerste stap is het bepalen van de periode.
+
+### Sensor 
+Vanuit de gedefinieerde projecten kunnen units, de zogenaamde 'feature of interest' worden geselecteerd. Een unit bevat de sensor(en) van een bepaald luchtmeetnetsysteem zoals fijnstof of temperatuur en luchtvochtigheid. 
+
+### Meetdata
+Voor een bepaalde periode en sensor wordt de meetdata opgehaald en komen daarmee voor deze applicatie beschikbaar. Door voor twee of meer sensoren data op te halen is het mogelijk om deze sensoren te vergelijken. 
+
+### Referentie sensor
+Vergelijken doe je met een referentie sensor. Een referentiesensor is een sensor waarvan je uitgaat dat die betrouwbare meetwaarden aflevert zoals een sensor van het officiele luchtmeetnet. Is deze niet beschikbaar dan kies je voor een sensor welke gekalibreerd is. 
+
+## OGC/SOS standaard
+Deze applicatie is gebouwd bovenop een basis van een OGC/SOS web-services. In dit geval een implementatie van 52-North. Voor de toepassing van de OGC/SOS standaard wordt in hoofdlijnen de volgende vertaling toegepast:
+
+..* project -> offering ( een project kan in principe meerdere 'offerings' bevatten )
+..* unit -> feature of interest
+..* sensor -> observable property
