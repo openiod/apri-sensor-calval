@@ -1,5 +1,4 @@
 
-
 # Id's used for UI and server functions 
 idList<- list(c(
     "name"="serverSensorUI_ssp","id"="sensorSelectUI_ssp", "desc"="In sensor selection tab panel" 
