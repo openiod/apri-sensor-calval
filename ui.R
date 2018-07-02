@@ -53,7 +53,7 @@ sensorBody <- dashboardBody(
       tabPanel("Periode selectie", {
       div(id = "periodSelect-container",
           DT::dataTableOutput("periodeSelectieTable")
-          #,sensorSelectUI('periodSelect')
+          ,periodSelectUI(idList["name"=="serverPeriodUI_ssp"]$id)
       )
     })
     , tabPanel("Sensor selectie", {

@@ -2,35 +2,36 @@
 sensorSelectUI <- function(id) {
   ns <- NS(id)
   
+  
 #  fluidRow(
 #    column(6, plotOutput(ns("plot1"), brush = ns("brush"))),
 #    column(6, plotOutput(ns("plot2"), brush = ns("brush")))
 #  )
-  
+  br()
   tagList(  
-  # Input: Selector for choosing project ----
-  selectInput(inputId = ns("projectId"),
+    br(),
+    # Input: Selector for choosing project ----
+    selectInput(inputId = ns("projectId"),
                label = "Project:",
                choices=projectList$projectName
-  ),
-  uiOutput(ns("uiProjectDetails")),
-  br(),
+    ),
+    uiOutput(ns("uiProjectDetails")),
+    br(),
   
-  uiOutput(ns("uiFois")),
-  uiOutput(ns("uiFoiDetails")),
-  br(),
+    uiOutput(ns("uiFois")),
+    uiOutput(ns("uiFoiDetails")),
+    br(),
   
-  uiOutput(ns("uiOps")),
-  uiOutput(ns("uiOpDetails")),
-  br(),
+    uiOutput(ns("uiOps")),
+    uiOutput(ns("uiOpDetails")),
+    br(),
 
-  uiOutput(ns("uiSelectSensorButton")),
-  uiOutput(ns("uiSelectSensorMessage")),
-  verbatimTextOutput(ns("uiSelectSensorResultMessage")),
+    uiOutput(ns("uiSelectSensorButton")),
+    uiOutput(ns("uiSelectSensorMessage")),
+    verbatimTextOutput(ns("uiSelectSensorResultMessage")),
+    br(),
   
-  dateRangeInput(ns("inDateRange"), "Date range input:")
-  
-  , DTOutput(ns('uiDataTable'))
+    DTOutput(ns('uiDataTable'))
   
   )
 }
@@ -42,7 +43,9 @@ sensorSelect <- function(input, output, session, param1) {
   # list of reactive values to return to calling module
   moduleResults <- reactiveValues(sensorSelection=NULL)
   ## list to store reactive values
-  values <- reactiveValues()
+  values <- reactiveValues(
+    refreshTable=1
+  )
   
 #  sensorDatalist<-tribble(
 #    ~foi, ~sensorType, ~date, ~treshold, ~sensorValue, ~tmp2, ~foiLocation, ~type
@@ -52,7 +55,6 @@ sensorSelect <- function(input, output, session, param1) {
   
   
   print('init local sensor selection')
-  values$refreshTable<-1
   localSensorSelection<-globalSensorSelection # copy empty tibble from global variable
 
   ##### get data reactive functions ########
@@ -323,35 +325,3 @@ sensorSelect <- function(input, output, session, param1) {
   
 }
 #########################################################
-
-
-tmpFunction <- function() {
-
-
-  
-
-  #  output$sensors = renderUI({
-  #    if (input$meetstation=='...' ) tmpMeetstation='...' else tmpMeetstation= input$meetstation
-  #    selectInput("sensor","Sensor",c(sensors[tmpMeetstation],"..."),"...")
-  #  })
-  
-  # Date range input =========================================
-  # Only label and value can be set for date range input
-  updateDateRangeInput(session, "inDateRange",
-                       label = paste("Date range"),
-                       start = "2018-05-16", # format(Sys.time(), "%Y-%M-%D"),
-                       end = "2018-05-17",  #paste("2013-12-",  sep=""),
-                       min = paste("2017-01-01",  sep=""),
-                       max = paste("2030-12-31", sep="")
-  )
-  
-  period<- reactive({
-    print('period')
-    print(input$inDateRange)
-    validate(
-      need(input$inDateRange)
-    )
-  })
-  
-
-}

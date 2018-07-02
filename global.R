@@ -27,6 +27,7 @@ library(leaflet)
 source("config.R")
 source("ApriSensor.R")
 source("as_sensorSelect.R")
+source("as_periodSelect.R")
 source("as_sensorGetData.R")
 
 # https://shiny.rstudio.com/reference/shiny/1.0.1/shiny-options.html
@@ -127,6 +128,13 @@ opTresholdList$opName <- paste(opTresholdList$opIdPrefix
                                ,opTresholdList$opIdSep
                                ,opTresholdList$opId
                                ,sep="")
+# tibble to hold selection periods
+globalPeriodSelection<-tibble(
+  periodStartDate=date()
+  ,periodEndDate=date()
+  ,timeSeriesCode=character()
+  ,timeSeriesDesc=character()
+)
 # tibble to hold selection sensors
 globalSensorSelection<-tibble(
   foiId=character()
@@ -140,6 +148,14 @@ globalSensorSelection<-tibble(
   ,foiName=character()
   ,foiIdShort=character()
 )
+timeSeriesCodeList<-tribble(
+  ~timeSeriesCode, ~timeSeriesDesc
+  , 'H','Per uur'
+  , '5m','Per 5 minuten'
+  , 'D','Per dag'
+  , '...','Geen time series'
+)
+
 
 wrkProjectList<-NULL
 wrkProject <- NULL

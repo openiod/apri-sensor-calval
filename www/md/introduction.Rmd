@@ -4,10 +4,11 @@ author: "Scapeler"
 date: "1-7-2018"
 output: html_document
 ---
+# Let op! Deze applicatie is in ontwikkeling en nog niet functioneel.
+
 
 ## Introductie
 
-Let op! Deze applicatie is in ontwikkeling en nog niet functioneel.
 
 De validatie en kalibratie van sensoren is niet eenvoudig. Deze applicatie probeert de processen die daarvoor nodig zijn te ondersteunen. 
 
