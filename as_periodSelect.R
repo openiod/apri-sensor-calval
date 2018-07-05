@@ -7,7 +7,10 @@ periodSelectUI <- function(id) {
     br()
     ,  verbatimTextOutput(ns("uiPeriodSelectResultMessage"))
   
-    , dateRangeInput(ns("inDateRange"), "Periode:")
+    , dateRangeInput(ns("inDateRange"), "Periode:"
+                     , start = Sys.Date()-1
+                     , end = Sys.Date()
+    )
     # Input: Selector for choosing project ----
     , selectInput(inputId = ns("timeSeriesCode"),
                 label = "Time series:",
@@ -19,7 +22,9 @@ periodSelectUI <- function(id) {
     , uiOutput(ns("uiPeriodSelectMessage"))
     
     , DTOutput(ns('uiDataTable2'))
-  
+    , wellPanel(
+      verbatimTextOutput(ns("selectedPeriod"))
+    )
   )
 }
 
@@ -69,7 +74,7 @@ periodSelect <- function(input, output, session, param1) {
   })
   output$uiPeriodSelectResultMessage <- renderText({
     print('output select period result message')
-    t<-er()
+    # t<-er()
     values$addToPeriodSelectionButtonResultMessage
   })
   output$uiDataTable2 <- DT::renderDataTable({
@@ -82,6 +87,23 @@ periodSelect <- function(input, output, session, param1) {
     replaceData(proxy, localPeriodSelection)
   })
   
+  output$selectedPeriod <-renderText({
+    paste(as.character(values$startDate),as.character(values$endDate),' time series: ', values$timeSeriesCode)
+  })
+  observeEvent(input$addToPeriodSelectionButton, {
+    print('button pressed')
+    values$startDate<-input$inDateRange[1]
+    values$endDate<-input$inDateRange[2]
+    values$timeSeriesCode<-input$timeSeriesCode
+    session$sendCustomMessage(type = 'testmessage',
+                              message = 'Thank you for clicking')
+    
+  })
+  observe({
+    print('Date changed')
+    
+  })
+    
   ##### end of output section #######  
 
   ##### event section #######  

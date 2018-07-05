@@ -39,8 +39,14 @@ header <- dashboardHeader(
 sidebar <- dashboardSidebar(
   tags$head(tags$style(HTML(mycss)))
   # include the message.js script so the JavaScript knows the custom message handler we have written
+#  , singleton(
+#    tags$head(tags$script(src = "js/message-handler.js"))
+#  )
+  , singleton(
+    tags$head(tags$script(src = "message-handler.js"))
+  )
   , includeScript(paste(getwd(),"/www/js/ApriSensor.js",sep=''))
-    
+#  , includeScript(paste(getwd(),"/www/js/message-handler.js",sep=''))
   , actionButton("processButton", "Verwerk")
   , p("Klik op de knop om de selectie te verwerken.")
   , verbatimTextOutput("processButtonText")

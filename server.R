@@ -78,8 +78,8 @@ function(input, output,session) {
 #  list.filter(idList, name=="serverSensorUI_ssp")
 #  print(idList[name=="serverSensorUI_ssp"])
 #  print(idList[name=="serverSensorUI_ssp"]$id)
-#  periodSelectionResult <- callModule(periodSelect,idList["name"=="periodSensorUI_ssp"]$id);
-#  print(periodSelectionResult)
+  periodSelectionResult <- callModule(periodSelect,idList["name"=="periodSensorUI_ssp"]$id);
+  print(periodSelectionResult)
   sensorSelectionResult <- callModule(sensorSelect,idList["name"=="serverSensorUI_ssp"]$id);
   print(sensorSelectionResult)
   observe({
