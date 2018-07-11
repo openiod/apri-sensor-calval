@@ -120,7 +120,7 @@ get_active_wrkEnv_envId<-function(){
 #  print(ls(lnkEnvActive))
   wrkEnvMain$lnkEnvActive$envId
 }
-get_active_wrkEnv_envId<-function(){
+get_active_wrkEnv_envName<-function(){
   print('get active wrkEnv envName')
   wrkEnvMain$lnkEnvActive$envName
 }
