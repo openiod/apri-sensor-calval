@@ -86,7 +86,9 @@ sensorBody <- dashboardBody(
           box(leafletOutput("sensorMap"))
         )
       })
-  )
+    , tabPanel(title=uiOutput("titlePanelActiveEnv"), { 
+    })
+    )
 )
 #dashboardPage(header, sidebar, body)
 navbarPage("OpenIoD.org"

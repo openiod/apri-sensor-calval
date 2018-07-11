@@ -2,7 +2,17 @@
 # Define server logic to summarize and view selected project ----
 function(input, output,session) {
   
-  
+  output$titlePanelActiveEnv <- renderText({
+    print('$$$$$$titlePanelActiveEnv')
+    wrkEnvMain$lnkEnvActive$values$active
+#    print(environmentList)
+#    print(setNames(environmentList[2],environmentList[1]))
+    print(get_active_wrkEnv_envName())
+#    t<-filter(environmentList, envId==get_active_wrkEnv_envName())
+#    print(t)
+    paste('Actuele omgeving:',get_active_wrkEnv_envName())
+  #  c('wrkEnvMain','wrkEnvA','wrkEnvB','wrkEnvC','wrkEnvD'),c('Algemeen','1-A','1-B','1-C','1-D')
+  })
     
   sensorPlot1<-function(plotData){
     print('sensorPlot1')

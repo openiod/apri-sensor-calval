@@ -8,8 +8,10 @@ periodSelectUI <- function(id) {
     ,  verbatimTextOutput(ns("uiPeriodSelectResultMessage"))
   
     , selectInput(inputId=ns("environment"),
-                  label = "Omgeving",
-                  choices=setNames(c('wrkEnvMain','wrkEnvA','wrkEnvB','wrkEnvC','wrkEnvD'),c('Algemeen','1-A','1-B','1-C','1-D'))
+                    label = "Omgeving"
+#                  , choices=setNames(environmentList[2-6],environmentList[2-6])
+                  , choices=setNames(c('wrkEnvMain','wrkEnvA','wrkEnvB','wrkEnvC','wrkEnvD'),c('Algemeen','1-A','1-B','1-C','1-D'))
+                  , selected='wrkEnvMain'
     )              # Environment 'wrkEnvDefault' is not selectable
     , dateRangeInput(ns("inDateRange"), "Periode:"
                      , start = Sys.Date()-1
@@ -17,9 +19,10 @@ periodSelectUI <- function(id) {
     )
     # Input: Selector for choosing project ----
     , selectInput(inputId = ns("timeSeriesCode"),
-                label = "Time series:",
-                #choices=timeSeriesCodeList$timeSeriesDesc
-                choices=setNames(timeSeriesCodeList$timeSeriesCode,timeSeriesCodeList$timeSeriesDesc)
+                  label = "Time series:"
+                  #choices=timeSeriesCodeList$timeSeriesDesc
+                , choices=setNames(timeSeriesCodeList$timeSeriesCode,timeSeriesCodeList$timeSeriesDesc)
+                , selected='H'
     )
     
 
@@ -61,8 +64,11 @@ periodSelect <- function(input, output, session, param1) {
   
   ##### observe section #######  
   observe({
-    print(input$environment)
+    input$environment
     set_activeEnvironment(input$environment)
+    updateDateRangeInput(session=session, inputId='inDateRange', label = NULL, start = get_wrkPeriod()[1],
+                         end = get_wrkPeriod()[2], min = NULL, max = NULL)
+    updateSelectInput(inputId='timeSeriesCode',selected=get_wrkTimeSeries(),session=session)
   })
 
   ##### end of observe section #######  

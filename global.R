@@ -73,6 +73,16 @@ z-index: 0;
 
 print('create default environment')
 
+environmentList<-tribble(
+  ~envId, ~envName
+  , 'wrkEnvDefault','Default'
+  , 'wrkEnvMain','Algemeen'
+  , 'wrkEnvA','A'
+  , 'wrkEnvB','B'
+  , 'wrkEnvC','C'
+  , 'wrkEnvD','D'
+)
+
 wrkEnvDefault <- new.env(parent = emptyenv())
 wrkEnvDefault$values<-reactiveValues(wrkPeriod=c(Sys.Date(),Sys.Date(),wrkTimeSeries='H'))
 wrkEnvMain <- new.env(parent = wrkEnvDefault)
@@ -87,21 +97,31 @@ wrkEnvB$values<-reactiveValues()
 wrkEnvC$values<-reactiveValues()
 wrkEnvD$values<-reactiveValues()
 
-wrkEnvDefault$envName<-'default env'
-wrkEnvMain$envName<-'main env'
-wrkEnvA$envName<-'A env'
-wrkEnvB$envName<-'B env'
-wrkEnvC$envName<-'C env'
-wrkEnvD$envName<-'D env'
+wrkEnvDefault$envId<-'wrkEnvDefault'
+wrkEnvMain$envId<-'wrkEnvMain'
+wrkEnvA$envId<-'wrkEnvA'
+wrkEnvB$envId<-'wrkEnvB'
+wrkEnvC$envId<-'wrkEnvC'
+wrkEnvD$envId<-'wrkEnvD'
+wrkEnvDefault$envName<-filter(environmentList, envId==wrkEnvDefault$envId)$envName
+wrkEnvMain$envName<-filter(environmentList, envId==wrkEnvMain$envId)$envName
+wrkEnvA$envName<-filter(environmentList, envId==wrkEnvA$envId)$envName
+wrkEnvB$envName<-filter(environmentList, envId==wrkEnvB$envId)$envName
+wrkEnvC$envName<-filter(environmentList, envId==wrkEnvC$envId)$envName
+wrkEnvD$envName<-filter(environmentList, envId==wrkEnvD$envId)$envName
 
-get_active_wrkEnv_envName<-function(){
-  print('get active wrkEnv envName')
+get_active_wrkEnv_envId<-function(){
+  print('get active wrkEnv envId')
 #  print(wrkEnvMain$lnkEnvActive)
-#  print(wrkEnvMain$lnkEnvActive$envName)
-#  print(lnkEnvActive$envName)
-#  print(wrkEnvMain$envName)
+#  print(wrkEnvMain$lnkEnvActive$envId)
+#  print(lnkEnvActive$envId)
+#  print(wrkEnvMain$envId)
 #  print(ls(wrkEnvMain))
 #  print(ls(lnkEnvActive))
+  wrkEnvMain$lnkEnvActive$envId
+}
+get_active_wrkEnv_envId<-function(){
+  print('get active wrkEnv envName')
   wrkEnvMain$lnkEnvActive$envName
 }
 set_activeEnvironment<- function(newEnv){
@@ -128,7 +148,9 @@ set_activeEnvironment<- function(newEnv){
 }
 get_wrkPeriod <- function(envir=NULL) {
   print('get_wrkPeriod')
+  print(wrkEnvMain$lnkEnvActive$values$wrkPeriod)  
   if (is.environment(envir)) {
+    print(envir$values$wrkPeriod)
     envir$values$wrkPeriod
   } else wrkEnvMain$lnkEnvActive$values$wrkPeriod
 #  print(environment())
@@ -137,7 +159,7 @@ get_wrkPeriod <- function(envir=NULL) {
 #  print(environmentName(wrkEnvMain$lnkEnvActive))
 }
 set_wrkPeriod <- function(value) {
-  print(paste("set wrkPeriod",wrkEnvMain$lnkEnvActive$envName))
+  print(paste("set wrkPeriod",wrkEnvMain$lnkEnvActive$envId))
   print(value)
   old <- wrkEnvMain$lnkEnvActive$values$wrkPeriod
   wrkEnvMain$lnkEnvActive$values$wrkPeriod <<- value
@@ -196,9 +218,9 @@ print(get("x", envir = wrkEnvMain))
 print('x found in main')
 print(get("x", envir = wrkEnvA))
 print('x found in A')
-print(get("envName", envir = lnkEnvActive))
+print(get("envId", envir = lnkEnvActive))
 print('x found in A')
-print(get("envName", envir = lnkEnvActive))
+print(get("envId", envir = lnkEnvActive))
 print('x found in lnkEnvActive')
 print(search())
 print(environment())
