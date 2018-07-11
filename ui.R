@@ -68,6 +68,11 @@ sensorBody <- dashboardBody(
           , sensorSelectUI(idList["name"=="serverSensorUI_ssp"]$id)
         )
       })
+    , tabPanel("Data samenvatting", {
+        div(id = "envSummary-container",
+          envSummaryUI(idList["name"=="envSummaryUI_ssp"]$id)
+        )    
+      })
     , tabPanel("sensor data", DT::dataTableOutput("wrkSensorDataTable"))
     , tabPanel("plot", {
         div(id = "plot-container",

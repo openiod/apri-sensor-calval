@@ -82,6 +82,9 @@ function(input, output,session) {
   print(periodSelectionResult)
   sensorSelectionResult <- callModule(sensorSelect,idList["name"=="serverSensorUI_ssp"]$id);
   print(sensorSelectionResult)
+  envSummaryResult <- callModule(envSummary,idList["name"=="envSummaryUI_ssp"]$id);
+  print(envSummaryResult)
+  
   observe({
     print("####################################### sensorSelectionResult")
     #print(sensorSelectionResult)
@@ -132,7 +135,6 @@ function(input, output,session) {
   })
   # Ask the client for current time and time zone (hours from UTC)
   triggerClientTime()
-  
   
   print('end of server')
   "end of server"

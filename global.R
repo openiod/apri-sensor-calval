@@ -19,6 +19,7 @@ library(scales)
 #install.packages("rlist")
 library(rlist)
 #library(plyr)
+library(pryr)
 #library(modules)
 #install.packages("future")
 library(future)
@@ -28,6 +29,7 @@ source("config.R")
 source("ApriSensor.R")
 source("as_sensorSelect.R")
 source("as_periodSelect.R")
+source("as_envSummary.R")
 source("as_sensorGetData.R")
 
 # https://shiny.rstudio.com/reference/shiny/1.0.1/shiny-options.html
@@ -55,6 +57,166 @@ z-index: 0;
 "
 
 #projects <- list("ApriSensor Dylos"="asDylos","ApriSensor Zutphen"="asZutphen","ApriSensor Apeldoorn"="asApeldoorn","ApriSensor D&S (DCMR, invoorvereiding)"="asDS")
+
+######## create environments for package data and functions
+##### work objects
+
+# wrkEnv : Work environment for 'global' package level storage of:
+
+# emptyenv()-> wrkEnvDefault -> wrkEnvMain -> wrkEnvA / wrkEnvB / wrkEnvC / wrkEnvD
+# objects per environment or NA for parent level 
+#   values : as reactiveValues
+#     wrkPeriod: start- and enddate 
+#     wrkTimeSeries: timeSeries indicator/code
+#     wrkSensors: sensor meta data
+#     wrkData: sensor data (messaurements)
+
+print('create default environment')
+
+wrkEnvDefault <- new.env(parent = emptyenv())
+wrkEnvDefault$values<-reactiveValues(wrkPeriod=c(Sys.Date(),Sys.Date(),wrkTimeSeries='H'))
+wrkEnvMain <- new.env(parent = wrkEnvDefault)
+wrkEnvA <- new.env(parent = wrkEnvMain)
+wrkEnvB <- new.env(parent = wrkEnvMain)
+wrkEnvC <- new.env(parent = wrkEnvMain)
+wrkEnvD <- new.env(parent = wrkEnvMain)
+
+wrkEnvMain$values<-reactiveValues()
+wrkEnvA$values<-reactiveValues()
+wrkEnvB$values<-reactiveValues()
+wrkEnvC$values<-reactiveValues()
+wrkEnvD$values<-reactiveValues()
+
+wrkEnvDefault$envName<-'default env'
+wrkEnvMain$envName<-'main env'
+wrkEnvA$envName<-'A env'
+wrkEnvB$envName<-'B env'
+wrkEnvC$envName<-'C env'
+wrkEnvD$envName<-'D env'
+
+get_active_wrkEnv_envName<-function(){
+  print('get active wrkEnv envName')
+#  print(wrkEnvMain$lnkEnvActive)
+#  print(wrkEnvMain$lnkEnvActive$envName)
+#  print(lnkEnvActive$envName)
+#  print(wrkEnvMain$envName)
+#  print(ls(wrkEnvMain))
+#  print(ls(lnkEnvActive))
+  wrkEnvMain$lnkEnvActive$envName
+}
+set_activeEnvironment<- function(newEnv){
+  print('set active environment')
+  #print(newEnv)
+  tmpEnv<-newEnv
+  if (!is.environment(tmpEnv)) {
+    choices<-list(wrkEnvDefault=wrkEnvDefault,wrkEnvMain=wrkEnvMain,wrkEnvA=wrkEnvA,wrkEnvB=wrkEnvB,wrkEnvC=wrkEnvC,wrkEnvD=wrkEnvD)
+    tmpEnv<-choices[[newEnv]]
+    #print(choices)
+  }
+  if (!is.environment(tmpEnv)) {
+    print('set active environment error, param is not an existing environment')
+    print(newEnv)
+    return
+  }  
+  #print(where("lnkEnvActive"))
+  old<-wrkEnvMain$lnkEnvActive
+  wrkEnvMain$lnkEnvActive<<-tmpEnv
+  lnkEnvActive<<-tmpEnv
+  old$values$active<-FALSE
+  wrkEnvMain$lnkEnvActive$values$active<-TRUE
+  invisible(old)
+}
+get_wrkPeriod <- function(envir=NULL) {
+  print('get_wrkPeriod')
+  if (is.environment(envir)) {
+    envir$values$wrkPeriod
+  } else wrkEnvMain$lnkEnvActive$values$wrkPeriod
+#  print(environment())
+#  print(ls(environment()))
+#  print(environmentName(wrkEnvMain))
+#  print(environmentName(wrkEnvMain$lnkEnvActive))
+}
+set_wrkPeriod <- function(value) {
+  print(paste("set wrkPeriod",wrkEnvMain$lnkEnvActive$envName))
+  print(value)
+  old <- wrkEnvMain$lnkEnvActive$values$wrkPeriod
+  wrkEnvMain$lnkEnvActive$values$wrkPeriod <<- value
+  invisible(old)
+}
+get_wrkTimeSeries <- function(envir=NULL) {
+  print('get_wrkTimeSeries')
+  if (is.environment(envir)) {
+    envir$values$wrkTimeSeries
+  } else wrkEnvMain$lnkEnvActive$values$wrkTimeSeries
+}
+set_wrkTimeSeries <- function(value) {
+  old <- wrkEnvMain$lnkEnvActive$values$wrkTimeSeries
+  wrkEnvMain$lnkEnvActive$values$wrkTimeSeries <- value
+  invisible(old)
+}
+get_wrkSensors <- function() {
+  wrkEnvMain$lnkEnvActive$wrkSensors
+}
+set_wrkSensors <- function(value) {
+  old <- wrkEnvMain$lnkEnvActive$wrkSensors
+  wrkEnvMain$lnkEnvActive$wrkSensors <- value
+  invisible(old)
+}
+get_wrkData <- function() {
+  wrkEnvMain$lnkEnvActive$wrkData
+}
+set_wrkData <- function(value) {
+  old <- wrkEnvMain$lnkEnvActive$wrkData
+  wrkEnvMain$lnkEnvActive$wrkData <- value
+  invisible(old)
+}
+
+wrkEnvMain$lnkEnvActive<-wrkEnvMain
+wrkEnvMain$values<-reactiveValues(wrkPeriod=NULL,wrkTimeSeries=NULL)
+set_activeEnvironment(wrkEnvMain)
+
+
+wrkEnvDefault$x <-1
+wrkEnvMain$x <-2
+wrkEnvA$x <-3
+print(ls(wrkEnvDefault))
+print(environment(wrkEnvDefault)) # NULL
+print(environment(wrkEnvMain)) # NULL
+print(parent.env(wrkEnvDefault)) # empty env
+print(parent.env(wrkEnvMain))
+print(parent.env(wrkEnvA))
+print(parent.env(wrkEnvB))
+print(parent.env(wrkEnvC))
+print(parent.env(wrkEnvD))
+print(environment(parent.env(wrkEnvA)))
+print(parent.frame())
+print(get("x", envir = wrkEnvDefault))
+print('x found in default env')
+print(get("x", envir = wrkEnvMain))
+print('x found in main')
+print(get("x", envir = wrkEnvA))
+print('x found in A')
+print(get("envName", envir = lnkEnvActive))
+print('x found in A')
+print(get("envName", envir = lnkEnvActive))
+print('x found in lnkEnvActive')
+print(search())
+print(environment())
+
+
+
+
+print('test_config.R')
+print(environment(wrkEnvMain))
+print(environment(wrkEnvMain$lnkEnvActive))
+
+
+
+######## create environment for package data and functions
+
+
+
+
 
 projectList<-tribble(
   ~projectId, ~projectName, ~projectAlias,  ~projectDesc

@@ -7,6 +7,10 @@ periodSelectUI <- function(id) {
     br()
     ,  verbatimTextOutput(ns("uiPeriodSelectResultMessage"))
   
+    , selectInput(inputId=ns("environment"),
+                  label = "Omgeving",
+                  choices=setNames(c('wrkEnvMain','wrkEnvA','wrkEnvB','wrkEnvC','wrkEnvD'),c('Algemeen','1-A','1-B','1-C','1-D'))
+    )              # Environment 'wrkEnvDefault' is not selectable
     , dateRangeInput(ns("inDateRange"), "Periode:"
                      , start = Sys.Date()-1
                      , end = Sys.Date()
@@ -14,13 +18,14 @@ periodSelectUI <- function(id) {
     # Input: Selector for choosing project ----
     , selectInput(inputId = ns("timeSeriesCode"),
                 label = "Time series:",
-                choices=timeSeriesCodeList$timeSeriesDesc
+                #choices=timeSeriesCodeList$timeSeriesDesc
+                choices=setNames(timeSeriesCodeList$timeSeriesCode,timeSeriesCodeList$timeSeriesDesc)
     )
     
 
     , actionButton(ns("addToPeriodSelectionButton"), "Selecteer periode")
     , uiOutput(ns("uiPeriodSelectMessage"))
-    
+    , br()
     , DTOutput(ns('uiDataTable2'))
     , wellPanel(
       verbatimTextOutput(ns("selectedPeriod"))
@@ -42,6 +47,8 @@ periodSelect <- function(input, output, session, param1) {
   print('init sensorDatalist')
   periodeDatalist<-NULL
   
+  set_activeEnvironment(wrkEnvMain)
+  
   
   print('init local period selection')
   localPeriodSelection<-globalPeriodSelection # copy empty tibble from global variable
@@ -53,6 +60,10 @@ periodSelect <- function(input, output, session, param1) {
   
   
   ##### observe section #######  
+  observe({
+    print(input$environment)
+    set_activeEnvironment(input$environment)
+  })
 
   ##### end of observe section #######  
   
@@ -88,17 +99,25 @@ periodSelect <- function(input, output, session, param1) {
   })
   
   output$selectedPeriod <-renderText({
-    paste(as.character(values$startDate),as.character(values$endDate),' time series: ', values$timeSeriesCode)
+    print(get_active_wrkEnv_envName())
+    input$environment
+    wrkPeriod<-get_wrkPeriod()
+    print('wrkPeriod')
+    print(wrkPeriod)
+    wrkTimeSeries<-get_wrkTimeSeries()
+    paste(as.character(wrkPeriod[1]),as.character(wrkPeriod[2]),' time series: ', wrkTimeSeries)
   })
+  
   observeEvent(input$addToPeriodSelectionButton, {
     print('button pressed')
-    values$startDate<-input$inDateRange[1]
-    values$endDate<-input$inDateRange[2]
-    values$timeSeriesCode<-input$timeSeriesCode
+    print(get_active_wrkEnv_envName())
+    print(lnkEnvActive$envName)
+    set_wrkPeriod(input$inDateRange)
+    set_wrkTimeSeries(input$timeSeriesCode)
     session$sendCustomMessage(type = 'testmessage',
                               message = 'Thank you for clicking')
-    
   })
+  
   observe({
     print('Date changed')
     

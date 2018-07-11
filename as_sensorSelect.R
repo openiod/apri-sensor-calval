@@ -254,7 +254,7 @@ sensorSelect <- function(input, output, session, param1) {
     
     
     # tijdelijk hier?
-    result <- callModule(sensorGetData,idList["name"=="sensorGetData_A"]$id, values$newSensorSelection, values$periodSelected);
+    result <- callModule(sensorGetData,idList["name"=="sensorGetData_A"]$id, values$newSensorSelection, values$periodSelected, get_wrkTimeSeries());
     tmpDataTibble <-as.tibble(result)
     if (is.null(sensorDatalist)) {
       print("init sensorDatalist")
@@ -318,6 +318,14 @@ sensorSelect <- function(input, output, session, param1) {
     #    t
   })
 
+  observe({
+    #values$gWrkPeriodUpdate()
+    print('observe sensorSelect:get_wrkPeriod()')
+    wrkPeriod<-get_wrkPeriod()
+    print(get_wrkPeriod())
+    # output$summaryWrkPeriod<-summary(wrkPeriod)
+  })
+  
   ##### end of function section #######  
   
 #  return (moduleResults$sensorSelection())
