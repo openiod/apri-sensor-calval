@@ -6,29 +6,39 @@ output: html_document
 ---
 
 ## Hoe werkt het
-Het proces bestaat uit twee drie hoofdonderdelen, een voor het selecteren van een periode waarover de validatie of kalibratie uitgevoerd dient te worden, een voor het selecteren van een of meer sensoren en ophalen van meetdata, en het laatste hoofdonderdeel waarin de validatie en/of kalibratie procedures worden uitgevoerd.
 
-### Stap 1 - selecteer een periode
-Dit is de eerste stap waarin wordt gekozen over welke periode de validatie of kalibratie wordt uitgevoerd.
+Kies uit het hoofdmenu (bovenin het scherm) de optie 'Sensor' waarmee de tabs beschikbaar komen om de volgende stappen te doorlopen.
 
-### Stap 2 - selecteer de sensor en haal de meetdata op
-Voor het selecteren van een sensor en ophalen van de data voor een bepaalde periode kies je het onderdeel 'Sensor' in het keuzescherm bovenin deze pagina.
+### Stap 1 - Periode selectie
+* Omgeving - Kies in dit scherm een omgeving waarin de meetdata opgeslagen zal worden.
+* Periode - Kies de start- en einddatum voor de te selecteren meetdata.
+* Time series - Kies de interval van de meetdata (per minuut, 5 minuten, uur, dag)
+
+Door de knop 'Selecteer periode' aan te klikken wordt de gekozen omgeving de actieve omgeving. In de actieve omgeving wordt de andere aangegeven parameters (periode, time series) opgeslagen. Tevens wordt deze actieve periode gebruikt voor de volgende stap, het kiezen van de senoren en opvragen van de meetdata.
+
+### Stap 2 - Sensor selectie
+* Project - Dit is een voorgeconfigureerde mogelijkheid om sensoren te groeperen per meetsysteem, per stad of per project. Kies hiermee dus een verzameling sensoren. (Later uit te breiden met 'offering' zoals bedoeld in de OGC/SOS standard)
+* Unit - Kies de unit of meetkast (OGC/SOS: feature of interest)
+* Sensor - Kies de sensor van de unit (OGC/SOS: observable property)
+
+Door de knop 'Selecteer sensor' aan te klikken worden de selectiegegevens opgeslagen in de actieve omgeving én wordt de meetdata opgehaald en ook opgeslagen in deze omgeving.
 
 ### Stap 3 - Validatie
-Met de opgevraagde meetdata worden de validate en kalibratie procedures uitgevoerd. Zie daarvoor de overeenkomstige onderdelen in het hoofdmenu bovenin deze pagina.
+Nog niet beschikbaar
+In deze stap worden de validatie procedures uitgevoerd. 
 
 ### Stap 4 - Kalibratie
+Nog niet beschikbaar
+In deze stap worden de kalibratie procedures uitgevoerd. 
 
-## Sensor selectie en ophalen meetdata
+### Stap 5 - Data samenvatting en sensor data
+Onder de tab(s) zijn de gegevens van de verschillende omgevingen in te zien.
 
-### Periode
-Een validatie of kalibratie wordt uitgevoerd op basis van meetresultaten van een bepaalde periode. Een eerste stap is het bepalen van de periode.
+### Stap 6 - Plot
+Beperkt beschikbaar.
+In deze stap worden de resultaten getoond zoals grafieken en plots per omgeving.   
 
-### Sensor 
-Vanuit de gedefinieerde projecten kunnen units, de zogenaamde 'feature of interest' worden geselecteerd. Een unit bevat de sensor(en) van een bepaald luchtmeetnetsysteem zoals fijnstof of temperatuur en luchtvochtigheid. 
+### Stap 7 - Kaart
+Nog niet functioneel.
+In deze stap worden de resultaten op een kaart getoond.    
 
-### Meetdata
-Voor een bepaalde periode en sensor wordt de meetdata opgehaald en komen daarmee voor deze applicatie beschikbaar. Door voor twee of meer sensoren data op te halen is het mogelijk om deze sensoren te vergelijken. 
-
-### Referentie sensor
-Vergelijken doe je met een referentie sensor. Een referentiesensor is een sensor waarvan je uitgaat dat die betrouwbare meetwaarden aflevert zoals een sensor van het officiele luchtmeetnet. Is deze niet beschikbaar dan kies je voor een sensor welke gekalibreerd is. 

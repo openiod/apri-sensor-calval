@@ -4,38 +4,22 @@ author: "Scapeler"
 date: "1-7-2018"
 output: html_document
 ---
-# Let op! Deze applicatie is in ontwikkeling en nog niet functioneel.
-
 
 ## Introductie
 
+Het valideren en kalibreren van sensoren is niet eenvoudig. Deze applicatie probeert de processen die daarvoor nodig zijn te ondersteunen. De eerste versie is eenvoudig van opzet, gaandeweg zal meer functionaliteit worden toegevoegd. In hoofdlijnen komt het erop neer dat er een aantal stappen te doorlopen zijn.
 
-De validatie en kalibratie van sensoren is niet eenvoudig. Deze applicatie probeert de processen die daarvoor nodig zijn te ondersteunen. 
+* Selecteren van de periode(n)
+* Selecteren van de sensor(en)
+* Ophalen van de meetdata
+* Kiezen van de validatieprocedure(s) (nog niet beschikbaar)
+* Kiezen van de kalibrateprocedure(s) (nog niet beschikbaar)
+* Tonen van de resultaten (grafieken, plots, statistieken, etc.)
 
-Voor het selecteren van een sensor en ophalen van de data voor een bepaalde periode kies je het onderdeel 'Sensor' in het keuzescherm bovenin deze pagina.
+Zie tab instructie voor meer informatie over de functionaliteit van deze applicatie. 
 
-Met de opgevraagde meetdata worden de validate en kalibratie procedures uitgevoerd. Zie daarvoor de overeenkomstige onderdelen in het hoofdmenu bovenin deze pagina.
+### Meerdere omgevingen beschikbaar
+Een omgeving in deze applicatie kan gezien worden als werkruimte waarin een periode en sensoren geselecteerd kunnen worden en bijbehorende meetdata opgeslagen. Hiermee wordt het mogelijk om verschillende situaties te neer te zetten die met elkaar vergeleken kunnen worden. Erg handig voor het analyseren en optimaliseren van verschillende procedures voor validatie of kalibratie.
 
-## Sensor selectie en ophalen meetdata
-
-### Periode
-Een validatie of kalibratie wordt uitgevoerd op basis van meetresultaten van een bepaalde periode. Een eerste stap is het bepalen van de periode.
-
-### Sensor 
-Vanuit de gedefinieerde projecten kunnen units, de zogenaamde 'feature of interest' worden geselecteerd. Een unit bevat de sensor(en) van een bepaald luchtmeetnetsysteem zoals fijnstof of temperatuur en luchtvochtigheid. 
-
-### Meetdata
-Voor een bepaalde periode en sensor wordt de meetdata opgehaald en komen daarmee voor deze applicatie beschikbaar. Door voor twee of meer sensoren data op te halen is het mogelijk om deze sensoren te vergelijken. 
-
-### Referentie sensor
-Vergelijken doe je met een referentie sensor. Een referentiesensor is een sensor waarvan je uitgaat dat die betrouwbare meetwaarden aflevert zoals een sensor van het officiele luchtmeetnet. Is deze niet beschikbaar dan kies je voor een sensor welke gekalibreerd is. 
-
-## OGC/SOS standaard
-Deze applicatie is gebouwd bovenop een basis van een OGC/SOS web-services. In dit geval een implementatie van 52-North. Voor de toepassing van de OGC/SOS standaard wordt in hoofdlijnen de volgende vertaling toegepast:
-
-* project -> offering ( een project kan in principe meerdere 'offerings' bevatten )
-
-* unit -> feature of interest
-
-* sensor -> observable property
-
+### Meerdere meetsystemen te combineren
+De applicatie is in principe geschikt om verschillende meetsystemen te koppelen. Wat daarbij wel of niet mogelijk is, is natuurlijk afhankelijk van het betreffende meetsysteem (is de data beschikbaar en hoe) maar in principe zijn daar meerdere scenarios voor te bedenken.
