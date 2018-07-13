@@ -78,7 +78,7 @@ sensorBody <- dashboardBody(
         div(id = "plot-container",
           tags$img(src = "spinner.gif",
             id = "loading-spinner"),
-          plotOutput("sensorPlot1", height = 500)
+          envPlotUI(idList["name"=="envPlotUI_ssp"]$id)
         )
       })
     , tabPanel("Kaart", { 

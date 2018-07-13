@@ -30,6 +30,7 @@ source("ApriSensor.R")
 source("as_sensorSelect.R")
 source("as_periodSelect.R")
 source("as_envSummary.R")
+source("as_envPlot.R")
 source("as_sensorGetData.R")
 
 # https://shiny.rstudio.com/reference/shiny/1.0.1/shiny-options.html
@@ -91,11 +92,11 @@ wrkEnvB <- new.env(parent = wrkEnvMain)
 wrkEnvC <- new.env(parent = wrkEnvMain)
 wrkEnvD <- new.env(parent = wrkEnvMain)
 
-wrkEnvMain$values<-reactiveValues()
-wrkEnvA$values<-reactiveValues()
-wrkEnvB$values<-reactiveValues()
-wrkEnvC$values<-reactiveValues()
-wrkEnvD$values<-reactiveValues()
+wrkEnvMain$values<-reactiveValues(wrkDataChanged=0)
+wrkEnvA$values<-reactiveValues(wrkDataChanged=0)
+wrkEnvB$values<-reactiveValues(wrkDataChanged=0)
+wrkEnvC$values<-reactiveValues(wrkDataChanged=0)
+wrkEnvD$values<-reactiveValues(wrkDataChanged=0)
 
 wrkEnvDefault$envId<-'wrkEnvDefault'
 wrkEnvMain$envId<-'wrkEnvMain'
@@ -180,8 +181,8 @@ get_wrkSensors <- function() {
   wrkEnvMain$lnkEnvActive$wrkSensors
 }
 set_wrkSensors <- function(value) {
-  old <- wrkEnvMain$lnkEnvActive$wrkSensors
-  wrkEnvMain$lnkEnvActive$wrkSensors <- value
+  old <- wrkEnvMain$lnkEnvActive$values$wrkSensors
+  wrkEnvMain$lnkEnvActive$values$wrkSensors <- value
   invisible(old)
 }
 get_wrkData <- function(envir=NULL) {
@@ -195,7 +196,14 @@ set_wrkData <- function(value) {
   print('set_wrkData')
   old <- wrkEnvMain$lnkEnvActive$wrkData
   wrkEnvMain$lnkEnvActive$wrkData <- value
+  wrkEnvMain$lnkEnvActive$values$wrkDataChanged<-(wrkEnvMain$lnkEnvActive$values$wrkDataChanged+1)
   invisible(old)
+}
+get_wrkDataChanged <- function(envir=NULL) {
+  if (is.environment(envir)) {
+    #print(paste('data from environment',envir$envirName))
+    envir$values$wrkDataChanged
+  } else wrkEnvMain$lnkEnvActive$values$wrkDataChanged
 }
 
 wrkEnvMain$lnkEnvActive<-wrkEnvMain

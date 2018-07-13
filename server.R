@@ -94,6 +94,8 @@ function(input, output,session) {
   print(sensorSelectionResult)
   envSummaryResult <- callModule(envSummary,idList["name"=="envSummaryUI_ssp"]$id);
   print(envSummaryResult)
+  envPlotResult <- callModule(envPlot,idList["name"=="envPlotUI_ssp"]$id);
+  print(envPlotResult)
   
   observe({
     print("####################################### sensorSelectionResult")

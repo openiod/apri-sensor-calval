@@ -22,28 +22,28 @@ envSummaryUI <- function(id) {
       , h3('Sensor(en)')
       , uiOutput(ns("summaryWrkSensorsA"))
       , h3('Sensor data')
-      , uiOutput(ns("summaryWrkDataA"))
+      , DTOutput(ns("summaryWrkDataADT"))
       , h2('Omgeving B')  
       , h3('Periode')
       , uiOutput(ns("summaryWrkPeriodB"))
       , h3('Sensor(en)')
       , uiOutput(ns("summaryWrkSensorsB"))
       , h3('Sensor data')
-      , uiOutput(ns("summaryWrkDataB"))
+      , DTOutput(ns("summaryWrkDataBDT"))
       , h2('Omgeving C')  
       , h3('Periode')
       , uiOutput(ns("summaryWrkPeriodC"))
       , h3('Sensor(en)')
       , uiOutput(ns("summaryWrkSensorsC"))
       , h3('Sensor data')
-      , uiOutput(ns("summaryWrkDataC"))
+      , DTOutput(ns("summaryWrkDataCDT"))
       , h2('Omgeving D')  
       , h3('Periode')
       , uiOutput(ns("summaryWrkPeriodD"))
       , h3('Sensor(en)')
       , uiOutput(ns("summaryWrkSensorsD"))
       , h3('Sensor data')
-      , uiOutput(ns("summaryWrkDataD"))
+      , DTOutput(ns("summaryWrkDataDDT"))
     )
 
   )
@@ -85,12 +85,41 @@ envSummary <- function(input, output, session) {
         , br()
       )
     })
-    output$summaryWrkDataMainDT <- DT::renderDataTable({
-      DT::datatable(wrkData)
-    })
   })
   
   observe({
+    get_wrkDataChanged(wrkEnvMain)
+    output$summaryWrkDataMainDT <- DT::renderDataTable({
+      DT::datatable(get_wrkData(wrkEnvMain))
+    })
+  })
+  observe({
+    get_wrkDataChanged(wrkEnvA)
+    output$summaryWrkDataADT <- DT::renderDataTable({
+      DT::datatable(get_wrkData(wrkEnvA))
+    })
+  })
+  observe({
+    get_wrkDataChanged(wrkEnvB)
+    output$summaryWrkDataBDT <- DT::renderDataTable({
+      DT::datatable(get_wrkData(wrkEnvB))
+    })
+  })
+  observe({
+    get_wrkDataChanged(wrkEnvC)
+    output$summaryWrkDataCDT <- DT::renderDataTable({
+      DT::datatable(get_wrkData(wrkEnvC))
+    })
+  })
+  observe({
+    get_wrkDataChanged(wrkEnvD)
+    output$summaryWrkDataDDT <- DT::renderDataTable({
+      DT::datatable(get_wrkData(wrkEnvD))
+    })
+  })
+  
+  
+    observe({
     print("##### observe envSummary A")
     #values$gWrkPeriodUpdate()
 #    print('observe get_wrkPeriod()')
