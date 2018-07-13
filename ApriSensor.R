@@ -48,16 +48,12 @@ get_ApriSensoR_data_SOS <- function(input, output, session, sensorsystem, fois, 
   tmp_data<-data %>%
     group_by(foiName,opName,date) %>%
     summarize(opValue = mean(opValue, na.rm = TRUE))
-  print('tmp_data')
-  print(tmp_data)
-
   tmp_data2<-left_join(tmp_data,opTresholdList,by=c("opName"))
   
 #  totalData <- dfdata
 #  totalData$tmp2 = as.character(totalData$foi);
   tmp_data2$foiIdImport=substr(tmp_data2$foiName,regexpr('[SCRP][SCWM].*$',tmp_data2$foiName),50);
-  print(tmp_data2)
-  
+
   #result <- callModule(factorSensorType,"ApriSensorType",totalData$sensorType);
   #totalData$sensorType <- result()
   

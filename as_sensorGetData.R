@@ -25,18 +25,14 @@ sensorGetData <- function(input, output, session, selectedSensor, selectedPeriod
     
   }  
   
-  values$result <- getSensorDataSos(selectedSensor$opIdPrefix
+  moduleResults$result <- getSensorDataSos(selectedSensor$opIdPrefix
                                 ,paste(selectedSensor$opIdPrefix,selectedSensor$foiIdSep,selectedSensor$foiId,sep='')
                                 ,paste(selectedSensor$opIdPrefix,selectedSensor$opIdSep,selectedSensor$opId,sep='')
                                 ,selectedTimeSeries
                                 )
-  print('result')
-  print(values$result())
-  #moduleResults$resultData <-resultGetData
-  
   observe({
     print('get data module returned results')
-    print(summary(values$result()))
+    print(summary(moduleResults$result()))
 #    t<-values$result()
 #    moduleResults$result <<- t
 #    moduleResults$test<-'test'
@@ -59,6 +55,6 @@ sensorGetData <- function(input, output, session, selectedSensor, selectedPeriod
   #    paste('Verwerkknop is gedrukt. Periode van ', input$inDateRange[1],' tot ',input$inDateRange[2], sep='')
   
 
-  return(values$result()) 
+  return(moduleResults) 
   
 }  

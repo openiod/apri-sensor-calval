@@ -255,21 +255,22 @@ sensorSelect <- function(input, output, session, param1) {
     
     # tijdelijk hier?
     result <- callModule(sensorGetData,idList["name"=="sensorGetData_A"]$id, values$newSensorSelection, values$periodSelected, get_wrkTimeSeries());
-    tmpDataTibble <-as.tibble(result)
-    if (is.null(sensorDatalist)) {
+    print(result$result())
+    #tmpDataTibble <-as.tibble(result$resul())
+    if (is.null(get_wrkData())) {
       print("init sensorDatalist")
-      sensorDatalist <<-tmpDataTibble
+      set_wrkData(result$result())
     }
     else {
       print("add to sensorDatalist")
-      t<-full_join(sensorDatalist,tmpDataTibble
+      t<-full_join(get_wrkData(),result$result()
                    , by = c("foiName","opName","date"   
                             ,"opValue","opIdPrefix","opIdSep"
                             , "opId", "opTreshold", "foiIdImport", "type"))
-      sensorDatalist<<-t
+      set_wrkData(t)
     }  
-    print(summary(sensorDatalist))
-    
+    print(summary(get_wrkData()))
+
     #    print(tmpSensorData1)
     t<-full_join(localSensorSelection,values$newSensorSelection, by = c("foiId","foiName","foiIdShort","opId","opIdPrefix","foiIdSep","opIdSep","opAlias","opUnit"))
     localSensorSelection<<-t

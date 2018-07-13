@@ -15,7 +15,7 @@ envSummaryUI <- function(id) {
       , h3('Sensor(en)')
       , uiOutput(ns("summaryWrkSensorsMain"))
       , h3('Sensor data')
-      , uiOutput(ns("summaryWrkDataMain"))
+      , DTOutput(ns("summaryWrkDataMainDT"))
       , h2('Omgeving A')  
       , h3('Periode')
       , uiOutput(ns("summaryWrkPeriodA"))
@@ -72,6 +72,7 @@ envSummary <- function(input, output, session) {
     print('observe get_wrkPeriod()')
     wrkPeriod<-get_wrkPeriod(wrkEnvMain)
     wrkTimeSeries<-get_wrkTimeSeries(wrkEnvMain)
+    wrkData<-get_wrkData(wrkEnvMain)
     print(wrkPeriod)
     #    if (is.null(wrkPeriod$value)) return
     #    output$summaryWrkPeriod<-renderText({
@@ -81,8 +82,12 @@ envSummary <- function(input, output, session) {
       tagList(
         tags$p(paste("van tot:",wrkPeriod[1],'/',wrkPeriod[2]))
         ,tags$p(paste("time series: ",wrkTimeSeries,'/',timeSeriesCodeList$timeSeriesDesc[timeSeriesCodeList$timeSeriesCode==wrkTimeSeries]))
+        , br()
       )
-    })  
+    })
+    output$summaryWrkDataMainDT <- DT::renderDataTable({
+      DT::datatable(wrkData)
+    })
   })
   
   observe({

@@ -184,10 +184,15 @@ set_wrkSensors <- function(value) {
   wrkEnvMain$lnkEnvActive$wrkSensors <- value
   invisible(old)
 }
-get_wrkData <- function() {
-  wrkEnvMain$lnkEnvActive$wrkData
+get_wrkData <- function(envir=NULL) {
+  print('get_wrkData')
+  if (is.environment(envir)) {
+    print(paste('data from environment',envir$envirName))
+    envir$wrkData
+  } else wrkEnvMain$lnkEnvActive$wrkData
 }
 set_wrkData <- function(value) {
+  print('set_wrkData')
   old <- wrkEnvMain$lnkEnvActive$wrkData
   wrkEnvMain$lnkEnvActive$wrkData <- value
   invisible(old)
