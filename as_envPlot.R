@@ -3,11 +3,6 @@ envPlotUI <- function(id) {
   ns <- NS(id)
   
   
-#  conditionalPanel("get_wrkDataChanged(wrkEnvA) > 0",
-#                   plotOutput(ns("plotWrkDataAPlot"))
-#                   ,ns #, NS(id)               
-#  )
-  
   tagList(  
 
       br()
@@ -24,7 +19,15 @@ envPlotUI <- function(id) {
         , uiOutput(ns("showPlotPanelA"))
         , conditionalPanel("output.showPlotPanelA == 'A'",
                            { 
+                             tagList(
+                             # Input: Selector for choosing type of graph/plot
+                              selectInput(inputId = ns("plotTypeA"),
+                                         label = "Plot type:",
+                                         choices=c('Standard','Regression')
+                                        )
+                             ,
                              plotOutput(ns("plotWrkDataAPlot"))
+                             )
                            }  
                            ,ns=ns                
         )
@@ -95,24 +98,127 @@ envPlot <- function(input, output, session) {
   observe({
     if(is.null(get_wrkDataChanged(wrkEnvA))) return()
     if(get_wrkDataChanged(wrkEnvA)==0) return()
-    print('?????????????????????????????????????????????????????????????????')
-    print(get_wrkDataChanged(wrkEnvA))
+    print('observe wrkDataChanged')
+#    print(get_wrkDataChanged(wrkEnvA))
     output$showPlotPanelA <- renderText('A')
-    t<-get_wrkData(wrkEnvA)
+    wrkEnvA$plotDataStandard<-get_wrkData(wrkEnvA)
+
+    isolate({
+      plotType<-input$plotTypeA
+      s<-get_wrkSensors(wrkEnvA)
+    })
+    
+    if (nrow(data.frame(s))>1) { #} && plotTyp=='Regression') {
+      print(t) 
+      print('ok')
+      t<-wrkEnvA$plotDataStandard
+      t1 <- t %>% filter(foiIdImport==s$foiId[1])
+      t2 <- t %>% filter(foiIdImport==s$foiId[2])
+      #total<-full_join(t1,t2)
+      total<-bind_cols(t1,t2)
+      total$x<-total$opValue
+      total$y<-total$opValue1
+      print(total)
+      wrkEnvA$plotDataRegression<-total
+    }  
+
+    output$plotWrkDataAPlot<-renderPlot({plotDataStandard(envir=wrkEnvA)})
+    return()
+    
     print('plot data for environment A')
-    print(t)
+    print(s)
+    print ('after print(s)')
     output$plotWrkDataAPlot<-renderPlot({
-      #plot(t$date, t$opValue)
-      #p<-ggplot(data=plotData,mapping = aes(x = date, y = sensorValue2))+geom_point() #,aes(x=date, y=sensorValue2))
-      p<-ggplot(data=t, map=aes(x=date, y=opValue)) + #geom_point()
-        geom_point(shape=1) #+     # Use hollow circles
-      #  geom_smooth(method=lm,   # Add linear regression line
-      #              se=FALSE)    # Don't add shaded confidence region
-      # )  
-      p
-      #plot(mtcars$wt, mtcars$mpg)
+      print('output plotWrkDataAPlot')
+      print(s)
+      print(t)
+#      print(nrow(data.frame(s)))
+      if (nrow(data.frame(s))>1 && plotTyp=='Regression') {
+        print(t) 
+        print('ok')
+        
+        t1 <- t %>% filter(foiIdImport==s$foiId[1])
+        t2 <- t %>% filter(foiIdImport==s$foiId[2])
+        #total<-full_join(t1,t2)
+        total<-bind_cols(t1,t2)
+        total$x<-total$opValue
+        total$y<-total$opValue1
+        print(total)
+        wrkEnvA$plotDataRegression<-total
+
+        p<-ggplot(data=total, aes(x=opValue, y=opValue1)) +
+          geom_point(shape=1) +    # Use hollow circles
+          geom_smooth(method=lm,   # Add linear regression line
+                      se=FALSE)    # Don't add shaded confidence region
+      
+        lm_eqn <- function(df){
+          m <- lm(y ~ x, df);
+          #eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2, 
+          eq <- substitute(y == a + b %.% x*","~~r^2~"="~r2, 
+                       list(a = format(coef(m)[1], digits = 2), 
+                            b = format(coef(m)[2], digits = 2), 
+                            r2 = format(summary(m)$r.squared, digits = 3)))
+          print(as.character(as.expression(eq)))
+          as.character(as.expression(eq));
+          
+        }
+        
+       # lm_eqn(total)
+        p1 <- p + geom_text(x = 1, y = 3, label = lm_eqn(total), parse = TRUE, size=8)
+        return (p1)      
+      
+      }
+      
+      output$plotWrkDataAPlot<-renderPlot({plotDataStandard(envir=wrkEnvA)})
+#      p<-ggplot(data=t, map=aes(x=date, y=opValue)) + #geom_point()
+#        geom_point(shape=1)  # Use hollow circles
+#      p
+      
     })
   })
+  
+  observe({
+    plotType<-input$plotTypeA
+    s<-isolate(get_wrkSensors(wrkEnvA))
+    if (nrow(data.frame(s))>1 && plotType=='Regression') {
+      p<-plotDataRegression(envir=wrkEnvA)
+    } else {
+      p<-plotDataStandard(envir=wrkEnvA)
+    }
+    output$plotWrkDataAPlot<-renderPlot({p})
+    
+  })
+  
+  plotDataRegression <- function (envir=NULL) {
+    data<-envir$plotDataRegression
+    p<-ggplot(data=data, aes(x=opValue, y=opValue1)) +
+      geom_point(shape=1) +    # Use hollow circles
+      geom_smooth(method=lm,   # Add linear regression line
+                  se=FALSE)    # Don't add shaded confidence region
+    
+    lm_eqn <- function(df){
+      m <- lm(y ~ x, df);
+      #eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2, 
+      eq <- substitute(y == a + b %.% x*","~~r^2~"="~r2, 
+                       list(a = format(coef(m)[1], digits = 2), 
+                            b = format(coef(m)[2], digits = 2), 
+                            r2 = format(summary(m)$r.squared, digits = 3)))
+      print(as.character(as.expression(eq)))
+      as.character(as.expression(eq));
+      
+    }
+    
+    # lm_eqn(total)
+    p + geom_text(x = 1, y = 3, label = lm_eqn(data), parse = TRUE, size=6)
+  }
+  
+  plotDataStandard <- function(envir=NULL) {
+    data<-envir$plotDataStandard
+    p<-ggplot(data=data, map=aes(x=date, y=opValue)) + #geom_point()
+      geom_point(shape=1)  # Use hollow circles
+  }
+  
+  
   observe({
     if(is.null(get_wrkDataChanged(wrkEnvB))) return()
     if(get_wrkDataChanged(wrkEnvB)==0) return()

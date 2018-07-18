@@ -55,7 +55,7 @@ sensorSelect <- function(input, output, session, param1) {
   
   
   print('init local sensor selection')
-  localSensorSelection<-globalSensorSelection # copy empty tibble from global variable
+#  localSensorSelection<-globalSensorSelection # copy empty tibble from global variable
 
   ##### get data reactive functions ########
   
@@ -220,12 +220,12 @@ sensorSelect <- function(input, output, session, param1) {
   })
   output$uiDataTable <- DT::renderDataTable({
       values$refreshTable
-      DT::datatable(localSensorSelection)
+      DT::datatable(get_wrkSensors())
   })
   proxy = dataTableProxy('uiDataTable')
   observe({
     values$refreshTable
-    replaceData(proxy, localSensorSelection)
+    replaceData(proxy, get_wrkSensors())
   })
   
   #  , dataTableOutput(ns('uiDataTable'), {
@@ -238,7 +238,7 @@ sensorSelect <- function(input, output, session, param1) {
   ##### event section #######  
   er<-eventReactive(input$addToSensorSelectionButton, {
     print('sensor selection button event')
-    print(localSensorSelection)
+    print(get_wrkSensors())
     values$newSensorSelection<-getOp()
     values$addToSensorSelectionButtonResultMessage<-paste('Sensor ',isolate(values$opId),' toegevoegd aan de sensor selectie',sep="")
   })  
@@ -246,6 +246,7 @@ sensorSelect <- function(input, output, session, param1) {
   ##### end of event section #######  
 
   ##### function section #######  
+  
 
   observe({
     print('observe values newSensorSelection')
@@ -256,7 +257,6 @@ sensorSelect <- function(input, output, session, param1) {
     # tijdelijk hier?
     result <- callModule(sensorGetData,idList["name"=="sensorGetData_A"]$id, values$newSensorSelection, values$periodSelected, get_wrkTimeSeries());
     print(result$result())
-    #tmpDataTibble <-as.tibble(result$resul())
     if (is.null(get_wrkData())) {
       print("init sensorDatalist")
       set_wrkData(result$result())
@@ -271,62 +271,32 @@ sensorSelect <- function(input, output, session, param1) {
     }  
     print(summary(get_wrkData()))
 
-    #    print(tmpSensorData1)
-    t<-full_join(localSensorSelection,values$newSensorSelection, by = c("foiId","foiName","foiIdShort","opId","opIdPrefix","foiIdSep","opIdSep","opAlias","opUnit"))
-    localSensorSelection<<-t
+    if (is.null(get_wrkSensors())) {
+      print("init wrkSensors")
+      set_wrkSensors(values$newSensorSelection)
+    }
+    else {
+      #    print(tmpSensorData1)
+      t<-full_join(get_wrkSensors(),values$newSensorSelection, by = c("foiId","foiName","foiIdShort","opId","opIdPrefix","foiIdSep","opIdSep","opAlias","opUnit"))
+      set_wrkSensors(t)
+    }
     values$refreshTable<<-values$refreshTable+1
     values$newSensorSelection<-NULL
     print('refresh table value is:')
     print(values$refreshTable)
     
-    print(localSensorSelection)
-    print(values$newSensorSelection)
-    
-    moduleResults$sensorSelection <-localSensorSelection
-  })
-  
-  observe({
-    print('observed result from get sensor data ')
-    t<-values$sensorSelectionResult
-    if (is.null(t)) print('is null')
-#    print(values$sensorSelectionResult())
+    moduleResults$sensorSelection <-get_wrkSensors()
   })
   
   AddToSensorSelection<-reactive({
     print('AddToSensorSelection')
     
- #   if (!is.null(input$opId)) {
       values$newSensorSelection<-getOp()
       print(values$newSensorSelection)
-      print(localSensorSelection)
-      #localSensorSelection<-t
-      print(t)
-      print('sensor selection:')
-      print(localSensorSelection)
       values$addToSensorSelectionButtonMessage<-'test5'
-#    }
-  
-    
-#    if(!is.null(input$opId)) {
-#      if (input$opId!="") {
-#        t<-paste('', wrkOp()$opIdPrefix,wrkOp()$opId,' (',wrkOp()$opAlias,',',wrkOp()$opUnit,')',sep='')
-#      }  
-#    }
-    
-    
-    #    t<-filter(wrkFoiOps(), opId==input$foiOps)  %>%
-    #      full_join(sensorSelection, by = c("projectId","foiId","foiName","foiIdShort","opId","opIdPrefix","opAlias","opUnit"))
-    #    t
+
   })
 
-  observe({
-    #values$gWrkPeriodUpdate()
-    print('observe sensorSelect:get_wrkPeriod()')
-    wrkPeriod<-get_wrkPeriod()
-    print(get_wrkPeriod())
-    # output$summaryWrkPeriod<-summary(wrkPeriod)
-  })
-  
   ##### end of function section #######  
   
 #  return (moduleResults$sensorSelection())

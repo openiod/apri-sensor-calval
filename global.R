@@ -177,8 +177,12 @@ set_wrkTimeSeries <- function(value) {
   wrkEnvMain$lnkEnvActive$values$wrkTimeSeries <- value
   invisible(old)
 }
-get_wrkSensors <- function() {
-  wrkEnvMain$lnkEnvActive$wrkSensors
+get_wrkSensors <- function(envir=NULL) {
+  print('get_wrkSensors')
+  if (is.environment(envir)) {
+    print(paste('sensors from environment',envir$envName))
+    envir$values$wrkSensors
+  } else wrkEnvMain$lnkEnvActive$values$wrkSensors
 }
 set_wrkSensors <- function(value) {
   old <- wrkEnvMain$lnkEnvActive$values$wrkSensors
@@ -188,7 +192,7 @@ set_wrkSensors <- function(value) {
 get_wrkData <- function(envir=NULL) {
   print('get_wrkData')
   if (is.environment(envir)) {
-    print(paste('data from environment',envir$envirName))
+    print(paste('data from environment',envir$envName))
     envir$wrkData
   } else wrkEnvMain$lnkEnvActive$wrkData
 }
@@ -201,7 +205,7 @@ set_wrkData <- function(value) {
 }
 get_wrkDataChanged <- function(envir=NULL) {
   if (is.environment(envir)) {
-    #print(paste('data from environment',envir$envirName))
+    #print(paste('data from environment',envir$envName))
     envir$values$wrkDataChanged
   } else wrkEnvMain$lnkEnvActive$values$wrkDataChanged
 }
