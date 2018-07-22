@@ -268,6 +268,10 @@ projectFoiList<-tribble(
   , 'visibilis','SCWM68C63A809290'
   , 'visibilis','SCWM68C63A808F33'
   , 'visibilis','LUCHTMEETNETNL01496'
+  , 'visibilis','SCRP00000000082fba1b'
+  , 'visibilis','SCRP00000000082fba1b_SDS011'
+  , 'visibilis','LUFTDATENNL12326'
+  , 'visibilis','KNMI06330'
 )
 foiList <-tribble( # feature of interest
   ~foiId, ~foiName, ~foiIdShort
@@ -275,6 +279,10 @@ foiList <-tribble( # feature of interest
   , 'SCWM68C63A809290','HvH PMSA003-2','9290'
   , 'SCWM68C63A808F33','HvH PMSA003-3','8F33'
   , 'LUCHTMEETNETNL01496','DCMR HvH/Berghaven','1496'
+  , 'SCRP00000000082fba1b','HvH/Berghaven','ba1b'
+  , 'SCRP00000000082fba1b_SDS011','HvH/Berghaven','ba1b'
+  , 'LUFTDATENNL12326','HvH/Berghaven','12326'
+  , 'KNMI06330','HvH','6330'
 )
 foiOpList<-tribble( # observable properties related to feature of interest
   ~foiId, ~opId, ~opIdPrefix, ~foiIdSep, ~opIdSep, ~opAlias, ~opUnit
@@ -287,6 +295,9 @@ foiOpList<-tribble( # observable properties related to feature of interest
   , 'SCWM68C63A809290','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.'
   , 'SCWM68C63A809290','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.'
   , 'SCWM68C63A809290','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.'
+  , 'SCWM68C63A809290','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa'
+  , 'SCWM68C63A809290','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc'
+  , 'SCWM68C63A809290','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV'
   , 'SCWM68C63A809492','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3'
   , 'SCWM68C63A809492','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3'
   , 'SCWM68C63A809492','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3'
@@ -305,9 +316,22 @@ foiOpList<-tribble( # observable properties related to feature of interest
   , 'SCWM68C63A808F33','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.'
   , 'SCWM68C63A808F33','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.'
   , 'SCWM68C63A808F33','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.'
+  , 'SCRP00000000082fba1b','temperature','apri-sensor-ds18b20','_','-', 'DS18B20 temp.','°C'
+  , 'SCRP00000000082fba1b_SDS011','pm25','apri-sensor-sds011','_','-', 'PM2.5','µg/m3'
+  , 'SCRP00000000082fba1b_SDS011','pm10','apri-sensor-sds011','_','-', 'PM10','µg/m3'
+  , 'SCRP00000000082fba1b','raw0','scapeler_dylos','_','_', 'part >0.5µm','part./cubic foot'
+  , 'SCRP00000000082fba1b','raw1','scapeler_dylos','_','_', 'part >2.5µm','part./cubic foot'
+  , 'LUFTDATENNL12326','PM25','apri-sensor-luftdaten','_','-', 'PM2.5','µg/m3'
+  , 'LUFTDATENNL12326','PM10','apri-sensor-luftdaten','_','-', 'PM10','µg/m3'
   , 'LUCHTMEETNETNL01496','PM25','apri-sensor-luchtmeetnet','_','-', 'PM2.5','µg/m3'
   , 'LUCHTMEETNETNL01496','PM10','apri-sensor-luchtmeetnet','_','-', 'PM10','µg/m3'
-)
+  , 'KNMI06330','rh','apri-sensor-knmi','10m_','-', '?','?'
+  , 'KNMI06330','ta','apri-sensor-knmi','10m_','-', '?','?'
+  , 'KNMI06330','RH1','apri-sensor-knmi','10m_','-', '?','?'
+  , 'KNMI06330','DH1','apri-sensor-knmi','10m_','-', '?','?'
+  , 'KNMI06330','ff','apri-sensor-knmi','10m_','-', '?','?'
+  , 'KNMI06330','dd','apri-sensor-knmi','10m_','-', '?','?'
+  )
 opTresholdList <- tribble(
   ~opIdPrefix, ~opIdSep, ~opId, ~opTreshold,
   "apri-sensor-pmsa003","-","rawGt0_3um",1000,
@@ -323,7 +347,9 @@ opTresholdList <- tribble(
   "apri-sensor-pmsa003","-","concPM2_5_amb",15,
   "apri-sensor-pmsa003","-","concPM10_0_amb",15,
   "apri-sensor-luchtmeetnet","-","PM25",15,
-  "apri-sensor-luchtmeetnet","-","PM10",15
+  "apri-sensor-luchtmeetnet","-","PM10",15,
+  "scapeler_dylos","_","raw0",15,
+  "scapeler_dylos","_","raw1",7000
 )
 opTresholdList$opName <- paste(opTresholdList$opIdPrefix
                                ,opTresholdList$opIdSep

@@ -52,7 +52,7 @@ get_ApriSensoR_data_SOS <- function(input, output, session, sensorsystem, fois, 
   
 #  totalData <- dfdata
 #  totalData$tmp2 = as.character(totalData$foi);
-  tmp_data2$foiIdImport=substr(tmp_data2$foiName,regexpr('[SCRP][SCWM].*$',tmp_data2$foiName),50);
+  tmp_data2$foiIdImport=substr(tmp_data2$foiName,regexpr('[SCRPL][SCWMU].*$',tmp_data2$foiName),50);
 
   #result <- callModule(factorSensorType,"ApriSensorType",totalData$sensorType);
   #totalData$sensorType <- result()
