@@ -27,6 +27,8 @@ envPlotUI <- function(id) {
                                         )
                              ,
                              plotOutput(ns("plotWrkDataAPlot"))
+                             ,
+                             verbatimTextOutput(ns("plotWrkDataASummary"))
                              )
                            }  
                            ,ns=ns                
@@ -34,21 +36,44 @@ envPlotUI <- function(id) {
         , uiOutput(ns("showPlotPanelB"))
         , conditionalPanel("output.showPlotPanelB == 'B'",
                            { 
-                             plotOutput(ns("plotWrkDataBPlot"))
+                             tagList(
+                               # Input: Selector for choosing type of graph/plot
+                               selectInput(inputId = ns("plotTypeB"),
+                                           label = "Plot type:",
+                                           choices=c('Standard','Regression')
+                               )
+                               ,
+                               plotOutput(ns("plotWrkDataBPlot"))
+                             )
                            }  
                            ,ns=ns                
         )
         , uiOutput(ns("showPlotPanelC"))
         , conditionalPanel("output.showPlotPanelC == 'C'",
                            { 
-                             plotOutput(ns("plotWrkDataCPlot"))
+                             tagList(
+                               # Input: Selector for choosing type of graph/plot
+                               selectInput(inputId = ns("plotTypeC"),
+                                           label = "Plot type:",
+                                           choices=c('Standard','Regression')
+                               )
+                               ,
+                               plotOutput(ns("plotWrkDataCPlot"))
+                             )
                            }  
                            ,ns=ns                
         )
         , uiOutput(ns("showPlotPanelD"))
         , conditionalPanel("output.showPlotPanelD == 'D'",
                            { 
-                             plotOutput(ns("plotWrkDataDPlot"))
+                             tagList(
+                               # Input: Selector for choosing type of graph/plot
+                               selectInput(inputId = ns("plotTypeD"),
+                                           label = "Plot type:",
+                                           choices=c('Standard','Regression')
+                               )
+                               , plotOutput(ns("plotWrkDataDPlot"))
+                             )
                            }  
                            ,ns=ns                
         )
@@ -95,6 +120,7 @@ envPlot <- function(input, output, session) {
       #plot(mtcars$wt, mtcars$mpg)
     })
   })
+  
   observe({
     if(is.null(get_wrkDataChanged(wrkEnvA))) return()
     if(get_wrkDataChanged(wrkEnvA)==0) return()
@@ -108,9 +134,7 @@ envPlot <- function(input, output, session) {
       s<-get_wrkSensors(wrkEnvA)
     })
     
-    if (nrow(data.frame(s))>1) { #} && plotTyp=='Regression') {
-      print(t) 
-      print('ok')
+    if (nrow(data.frame(s))>1) { #} & plotTyp=='Regression') {
       t<-wrkEnvA$plotDataStandard
       t1 <- t %>% filter(foiIdImport==s$foiId[1])
       t2 <- t %>% filter(foiIdImport==s$foiId[2])
@@ -121,75 +145,58 @@ envPlot <- function(input, output, session) {
       print(total)
       wrkEnvA$plotDataRegression<-total
     }  
-
-    output$plotWrkDataAPlot<-renderPlot({plotDataStandard(envir=wrkEnvA)})
-    return()
-    
-    print('plot data for environment A')
-    print(s)
-    print ('after print(s)')
-    output$plotWrkDataAPlot<-renderPlot({
-      print('output plotWrkDataAPlot')
-      print(s)
-      print(t)
-#      print(nrow(data.frame(s)))
-      if (nrow(data.frame(s))>1 && plotTyp=='Regression') {
-        print(t) 
-        print('ok')
-        
-        t1 <- t %>% filter(foiIdImport==s$foiId[1])
-        t2 <- t %>% filter(foiIdImport==s$foiId[2])
-        #total<-full_join(t1,t2)
-        total<-bind_cols(t1,t2)
-        total$x<-total$opValue
-        total$y<-total$opValue1
-        print(total)
-        wrkEnvA$plotDataRegression<-total
-
-        p<-ggplot(data=total, aes(x=opValue, y=opValue1)) +
-          geom_point(shape=1) +    # Use hollow circles
-          geom_smooth(method=lm,   # Add linear regression line
-                      se=FALSE)    # Don't add shaded confidence region
-      
-        lm_eqn <- function(df){
-          m <- lm(y ~ x, df);
-          #eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2, 
-          eq <- substitute(y == a + b %.% x*","~~r^2~"="~r2, 
-                       list(a = format(coef(m)[1], digits = 2), 
-                            b = format(coef(m)[2], digits = 2), 
-                            r2 = format(summary(m)$r.squared, digits = 3)))
-          print(as.character(as.expression(eq)))
-          as.character(as.expression(eq));
-          
-        }
-        
-       # lm_eqn(total)
-        p1 <- p + geom_text(x = 1, y = 3, label = lm_eqn(total), parse = TRUE, size=8)
-        return (p1)      
-      
-      }
-      
-      output$plotWrkDataAPlot<-renderPlot({plotDataStandard(envir=wrkEnvA)})
-#      p<-ggplot(data=t, map=aes(x=date, y=opValue)) + #geom_point()
-#        geom_point(shape=1)  # Use hollow circles
-#      p
-      
-    })
+    output$plotWrkDataAPlot<-NULL
+    #output$plotWrkDataAPlot<-renderPlot({plotDataStandard(envir=wrkEnvA)})
   })
   
   observe({
-    plotType<-input$plotTypeA
-    s<-isolate(get_wrkSensors(wrkEnvA))
-    if (nrow(data.frame(s))>1 && plotType=='Regression') {
-      p<-plotDataRegression(envir=wrkEnvA)
-    } else {
-      p<-plotDataStandard(envir=wrkEnvA)
+    wrkEnvA$values$plotType<-input$plotTypeA
+    r<-createPlot(envir=wrkEnvA)
+    output$plotWrkDataAPlot<-renderPlot({r$p})
+    output$plotWrkDataASummary<-renderPrint({
+      print(wrkEnvA$values$dataSummary$call)
+      print(wrkEnvA$values$dataSummary$r.squared)
+      print(wrkEnvA$values$dataSummary$residuals)
+      print(wrkEnvA$values$dataSummary[1-4])
+      print(wrkEnvA$values$dataSummary)
     }
-    output$plotWrkDataAPlot<-renderPlot({p})
-    
+    )  
+  })
+  observe({
+    wrkEnvB$values$plotType<-input$plotTypeB
+    r<-createPlot(envir=wrkEnvB)
+    output$plotWrkDataBPlot<-renderPlot({r$p})
+  })
+  observe({
+    wrkEnvC$values$plotType<-input$plotTypeC
+    r<-createPlot(envir=wrkEnvC)
+    output$plotWrkDataCPlot<-renderPlot({r$p})
+  })
+  observe({
+    wrkEnvD$values$plotType<-input$plotTypeD
+    r<-createPlot(envir=wrkEnvD)
+    output$plotWrkDataDPlot<-renderPlot({r$p})
   })
   
+  createPlot<- function(envir=NULL) {
+    s<-get_wrkSensors(envir=envir)
+    print(s)
+    print(envir$values$plotType)
+    if (is.null(s)) return(NULL)
+    if (is.null(envir$values$plotType)) return(NULL)
+    
+    isolate({
+    s<-get_wrkSensors(envir=envir)
+    if (nrow(data.frame(s))>1 & envir$values$plotType=='Regression') {
+      r<-plotDataRegression(envir=envir)
+    } else {
+      r<-plotDataStandard(envir=envir)
+    }
+    })
+  }
+  
   plotDataRegression <- function (envir=NULL) {
+    results<-NULL
     data<-envir$plotDataRegression
     p<-ggplot(data=data, aes(x=opValue, y=opValue1)) +
       geom_point(shape=1) +    # Use hollow circles
@@ -198,6 +205,7 @@ envPlot <- function(input, output, session) {
     
     lm_eqn <- function(df){
       m <- lm(y ~ x, df);
+      envir$values$dataSummary<-summary(m)
       #eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2, 
       eq <- substitute(y == a + b %.% x*","~~r^2~"="~r2, 
                        list(a = format(coef(m)[1], digits = 2), 
@@ -209,13 +217,23 @@ envPlot <- function(input, output, session) {
     }
     
     # lm_eqn(total)
+    
     p + geom_text(x = 1, y = 3, label = lm_eqn(data), parse = TRUE, size=6)
+    results$p<-p
+    return(results)
   }
   
   plotDataStandard <- function(envir=NULL) {
+    results<-NULL
     data<-envir$plotDataStandard
-    p<-ggplot(data=data, map=aes(x=date, y=opValue)) + #geom_point()
-      geom_point(shape=1)  # Use hollow circles
+    p<-ggplot(data=data, map=aes(x=date, y=opValue)) + 
+      geom_point(shape=1) +  # Use hollow circles
+      geom_line(aes(colour=foiIdImport
+                    ,group=interaction(foiIdImport,opId,type)
+      ),size=0.8)
+    results$p<-p
+    envir$values$dataSummary<-summary(data)
+    return(results)
   }
   
   
@@ -240,6 +258,7 @@ envPlot <- function(input, output, session) {
       #plot(mtcars$wt, mtcars$mpg)
     })
   })
+  
   observe({
     if(is.null(get_wrkDataChanged(wrkEnvC))) return()
     if(get_wrkDataChanged(wrkEnvC)==0) return()
