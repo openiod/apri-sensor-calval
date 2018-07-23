@@ -307,6 +307,9 @@ foiOpList<-tribble( # observable properties related to feature of interest
   , 'SCWM68C63A809492','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.'
   , 'SCWM68C63A809492','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.'
   , 'SCWM68C63A809492','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.'
+  , 'SCWM68C63A809492','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa'
+  , 'SCWM68C63A809492','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc'
+  , 'SCWM68C63A809492','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV'
   , 'SCWM68C63A808F33','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3'
   , 'SCWM68C63A808F33','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3'
   , 'SCWM68C63A808F33','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3'
@@ -316,6 +319,9 @@ foiOpList<-tribble( # observable properties related to feature of interest
   , 'SCWM68C63A808F33','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.'
   , 'SCWM68C63A808F33','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.'
   , 'SCWM68C63A808F33','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.'
+  , 'SCWM68C63A808F33','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa'
+  , 'SCWM68C63A808F33','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc'
+  , 'SCWM68C63A808F33','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV'
   , 'SCRP00000000082fba1b','temperature','apri-sensor-ds18b20','_','-', 'DS18B20 temp.','°C'
   , 'SCRP00000000082fba1b_SDS011','pm25','apri-sensor-sds011','_','-', 'PM2.5','µg/m3'
   , 'SCRP00000000082fba1b_SDS011','pm10','apri-sensor-sds011','_','-', 'PM10','µg/m3'
@@ -346,6 +352,9 @@ opTresholdList <- tribble(
   "apri-sensor-pmsa003","-","concPM1_0_amb",15,
   "apri-sensor-pmsa003","-","concPM2_5_amb",15,
   "apri-sensor-pmsa003","-","concPM10_0_amb",15,
+  "apri-sensor-bme280","-","pressure",15,
+  "apri-sensor-bme280","-","temperature",15,
+  "apri-sensor-bme280","-","rHum",15,
   "apri-sensor-luchtmeetnet","-","PM25",15,
   "apri-sensor-luchtmeetnet","-","PM10",15,
   "scapeler_dylos","_","raw0",15,

@@ -1,5 +1,7 @@
 
-get_ApriSensoR_data_SOS <- function(input, output, session, sensorsystem, fois, ops, period, timeSeries) {
+get_ApriSensoR_data_SOS <- function(input, output, session, sensorsystem, fois, ops, period, timeSeries
+                                    , startDate=NULL
+                                    , endDate=NULL) {
   # fois <- "apri-sensor-pmsa003_SCWM68C63A80923C,apri-sensor-pmsa003_SCWM68C63A23401D";
   # periode <- ''
   # periode <- "&date_start=2018-02-27T00:00:00+01:00&date_end=2018-04-01T00:00:00+01:00";
@@ -11,12 +13,19 @@ get_ApriSensoR_data_SOS <- function(input, output, session, sensorsystem, fois, 
 #  validate(
 #    need(fois != "", "Please select a feature of interest")
 #  )
-
+  startEnd<-NULL
+  print(startDate)
+  print(endDate)
+  if (!is.null(startDate)&!is.null(endDate)) {
+    startEnd<-paste('&date_start=',startDate,'&date_end=',endDate,sep='');
+    print(startEnd)
+  }
   url <- paste("https://openiod.org/SCAPE604/openiod?SERVICE=WPS&REQUEST=Execute&identifier=transform_observation&action=getobservation",
       "&sensorsystem=",sensorsystem,
       "&offering=offering_0439_initial",
       "&foi=",fois,
       "&op=",ops,
+      startEnd,
       "&timeSeries=",timeSeries,
       "&format=csv",
       sep="");

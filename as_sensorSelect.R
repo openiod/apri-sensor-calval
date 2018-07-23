@@ -255,7 +255,7 @@ sensorSelect <- function(input, output, session, param1) {
     
     
     # tijdelijk hier?
-    result <- callModule(sensorGetData,idList["name"=="sensorGetData_A"]$id, values$newSensorSelection, values$periodSelected, get_wrkTimeSeries());
+    result <- callModule(sensorGetData,idList["name"=="sensorGetData_A"]$id, values$newSensorSelection, get_wrkPeriod(), get_wrkTimeSeries());
     print(result$result())
     if (is.null(get_wrkData())) {
       print("init sensorDatalist")

@@ -138,30 +138,79 @@ envPlot <- function(input, output, session) {
       t<-wrkEnvA$plotDataStandard
       t1 <- t %>% filter(foiIdImport==s$foiId[1])
       t2 <- t %>% filter(foiIdImport==s$foiId[2])
-      #total<-full_join(t1,t2)
-      total<-bind_cols(t1,t2)
-      total$x<-total$opValue
-      total$y<-total$opValue1
+      if (nrow(data.frame(s))>2) {
+        t3 <- t %>% filter(foiIdImport==s$foiId[3])
+      }  
+      if (nrow(data.frame(s))>3) {
+        t4 <- t %>% filter(foiIdImport==s$foiId[4])
+      }  
+      if (nrow(data.frame(s))==2) {
+        total<-bind_cols(t1,t2)
+        total$y<-total$opValue
+        total$x<-total$opValue1
+      }
+      if (nrow(data.frame(s))==3) {
+        total<-bind_cols(t1,t2,t3)
+        total$y<-total$opValue
+        total$x1<-total$opValue1
+        total$x2<-total$opValue2
+      }
+      if (nrow(data.frame(s))==4) {
+        print(summary(t1))
+        print(summary(t2))
+        print(summary(t3))
+        print(summary(t4))
+        total<-bind_cols(t1,t2,t3,t4)
+        total$y<-total$opValue
+        total$x1<-total$opValue1
+        total$x2<-total$opValue2
+        total$x3<-total$opValue3
+      }
       print(total)
       wrkEnvA$plotDataRegression<-total
     }  
     output$plotWrkDataAPlot<-NULL
-    #output$plotWrkDataAPlot<-renderPlot({plotDataStandard(envir=wrkEnvA)})
+    #output$plotWrkDataAPlot<-renderPlot({plot_DataStandard(envir=wrkEnvA)})
   })
   
   observe({
-    wrkEnvA$values$plotType<-input$plotTypeA
-    r<-createPlot(envir=wrkEnvA)
-    output$plotWrkDataAPlot<-renderPlot({r$p})
-    output$plotWrkDataASummary<-renderPrint({
-      print(wrkEnvA$values$dataSummary$call)
-      print(wrkEnvA$values$dataSummary$r.squared)
-      print(wrkEnvA$values$dataSummary$residuals)
-      print(wrkEnvA$values$dataSummary[1-4])
-      print(wrkEnvA$values$dataSummary)
+    print('observe: input plotType ')
+    print(input$plotTypeA)
+    tmp_envir<-wrkEnvA
+    tmp_envir$values$plotType<-input$plotTypeA
+    print(tmp_envir$values$plotType)
+    r<-NULL
+    r$p<-NULL
+    print(r)
+    print(r$p)
+    r<-createPlot(envir=tmp_envir)
+    print(r)
+    print(r$p)
+    
+    if(is.ggplot(r$p)) {
+      print('r$p is a ggplot')
+      output$plotWrkDataAPlot<-renderPlot({r$p})
+    
+      if (!is.null(r)&!is.null(r$p)&tmp_envir$values$plotType=='Regression'){
+        output$plotWrkDataASummary<-renderPrint({
+          print(tmp_envir$values$dataSummary$call)
+          print(tmp_envir$values$dataSummary$r.squared)
+          print(tmp_envir$values$dataSummary$residuals)
+          #print(tmp_envir$values$dataSummary[1-4])
+          print(tmp_envir$values$dataSummary)
+        })
+      }
+    } else {
+      print('r$p is not a ggplot')
+      output$plotWrkDataAPlot<-renderPlot({r$p})
     }
-    )  
+    if (tmp_envir$values$plotType=='Standard'){
+      output$plotWrkDataASummary<-renderPrint({
+        print(tmp_envir$values$dataSummary)
+      })
+    }
   })
+  
   observe({
     wrkEnvB$values$plotType<-input$plotTypeB
     r<-createPlot(envir=wrkEnvB)
@@ -179,23 +228,30 @@ envPlot <- function(input, output, session) {
   })
   
   createPlot<- function(envir=NULL) {
+    r<-NULL
     s<-get_wrkSensors(envir=envir)
     print(s)
     print(envir$values$plotType)
     if (is.null(s)) return(NULL)
     if (is.null(envir$values$plotType)) return(NULL)
     
+    print(nrow(data.frame(s)))
+
     isolate({
-    s<-get_wrkSensors(envir=envir)
-    if (nrow(data.frame(s))>1 & envir$values$plotType=='Regression') {
-      r<-plotDataRegression(envir=envir)
-    } else {
-      r<-plotDataStandard(envir=envir)
-    }
+      #s<-get_wrkSensors(envir=envir)
+      print(nrow(data.frame(s)))
+      if (envir$values$plotType=='Regression') {
+        if(nrow(data.frame(s))>1) {
+          r<-plot_DataRegression(envir=envir)
+        }
+      } else {
+        r<-plot_DataStandard(envir=envir)
+      }
     })
   }
   
-  plotDataRegression <- function (envir=NULL) {
+  plot_DataRegression <- function (envir=NULL) {
+    print('plot_DataRegression')
     results<-NULL
     data<-envir$plotDataRegression
     p<-ggplot(data=data, aes(x=opValue, y=opValue1)) +
@@ -204,7 +260,16 @@ envPlot <- function(input, output, session) {
                   se=FALSE)    # Don't add shaded confidence region
     
     lm_eqn <- function(df){
-      m <- lm(y ~ x, df);
+      print(df)
+      if(all(c("x1", "x2", "x3") %in% colnames(df)) ) {  
+        m <- lm(y ~ x1+x2+x3, df);
+      } else if(all(c("x1", "x2") %in% colnames(df))){
+        m <- lm(y ~ x1+x2, df);
+      } else if("x1" %in% colnames(df)){
+        m <- lm(y ~ x1, df);
+      } else if("x" %in% colnames(df)){
+        m <- lm(y ~ x, df);
+      }
       envir$values$dataSummary<-summary(m)
       #eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2, 
       eq <- substitute(y == a + b %.% x*","~~r^2~"="~r2, 
@@ -223,13 +288,14 @@ envPlot <- function(input, output, session) {
     return(results)
   }
   
-  plotDataStandard <- function(envir=NULL) {
+  plot_DataStandard <- function(envir=NULL) {
+    print('plot_DataStandard')
     results<-NULL
     data<-envir$plotDataStandard
     p<-ggplot(data=data, map=aes(x=date, y=opValue)) + 
       geom_point(shape=1) +  # Use hollow circles
-      geom_line(aes(colour=foiIdImport
-                    ,group=interaction(foiIdImport,opId,type)
+      geom_line(aes(colour=foiIdImport,
+                    group=interaction(foiIdImport,opId,type)
       ),size=0.8)
     results$p<-p
     envir$values$dataSummary<-summary(data)

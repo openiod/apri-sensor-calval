@@ -8,6 +8,8 @@ sensorGetData <- function(input, output, session, selectedSensor, selectedPeriod
   print(selectedSensor)
   print('input selected period:')
   print(selectedPeriod)
+  print('input selected timeseries:')
+  print(selectedTimeSeries)
   
   # list of reactive values to return to calling module
   moduleResults <- reactiveValues()
@@ -15,20 +17,30 @@ sensorGetData <- function(input, output, session, selectedSensor, selectedPeriod
   values <- reactiveValues()
   
   
-  getSensorDataSos<-function(sensorSystem,fois,ops,timeSeries) {
+  getSensorDataSos<-function(sensorSystem,fois,ops,timeSeries,period,startDate=NULL,endDate=NULL) {
     data <- callModule(get_ApriSensoR_data_SOS,"ApriSensorData"
                        , sensorSystem
                        , fois 
                        , ops
                        , timeSeries
+                       , startDate=startDate
+                       , endDate=endDate
                        , period="");
     
   }  
-  
+  print(selectedPeriod[1])
+  print(selectedPeriod[2])
+  selectionStartDate = format(selectedPeriod[1],format="%Y-%m-%dT00:00:00+02:00") # eg. 2018-05-26T06:00:00+01:00
+  selectionEndDate = format(selectedPeriod[2],format="%Y-%m-%dT00:00:00+02:00")
+  print(selectionStartDate)
+  print(selectionEndDate)
   moduleResults$result <- getSensorDataSos(selectedSensor$opIdPrefix
                                 ,paste(selectedSensor$opIdPrefix,selectedSensor$foiIdSep,selectedSensor$foiId,sep='')
                                 ,paste(selectedSensor$opIdPrefix,selectedSensor$opIdSep,selectedSensor$opId,sep='')
                                 ,selectedTimeSeries
+                                ,period=""
+                                ,startDate=selectionStartDate
+                                ,endDate=selectionEndDate
                                 )
   observe({
     print('get data module returned results')
