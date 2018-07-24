@@ -34,7 +34,7 @@ sensorGetData <- function(input, output, session, selectedSensor, selectedPeriod
   selectionEndDate = format(selectedPeriod[2],format="%Y-%m-%dT00:00:00+02:00")
   print(selectionStartDate)
   print(selectionEndDate)
-  moduleResults$result <- getSensorDataSos(selectedSensor$opIdPrefix
+  result <- getSensorDataSos(selectedSensor$opIdPrefix
                                 ,paste(selectedSensor$opIdPrefix,selectedSensor$foiIdSep,selectedSensor$foiId,sep='')
                                 ,paste(selectedSensor$opIdPrefix,selectedSensor$opIdSep,selectedSensor$opId,sep='')
                                 ,selectedTimeSeries
@@ -42,6 +42,8 @@ sensorGetData <- function(input, output, session, selectedSensor, selectedPeriod
                                 ,startDate=selectionStartDate
                                 ,endDate=selectionEndDate
                                 )
+  moduleResults$result<-result
+  
   observe({
     print('get data module returned results')
     print(summary(moduleResults$result()))

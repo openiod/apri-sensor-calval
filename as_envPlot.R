@@ -136,13 +136,13 @@ envPlot <- function(input, output, session) {
     
     if (nrow(data.frame(s))>1) { #} & plotTyp=='Regression') {
       t<-wrkEnvA$plotDataStandard
-      t1 <- t %>% filter(foiIdImport==s$foiId[1])
-      t2 <- t %>% filter(foiIdImport==s$foiId[2])
+      t1 <- t %>% filter(foiIdImport==s$foiId[1]&opId==s$opId[1])
+      t2 <- t %>% filter(foiIdImport==s$foiId[2]&opId==s$opId[2])
       if (nrow(data.frame(s))>2) {
-        t3 <- t %>% filter(foiIdImport==s$foiId[3])
+        t3 <- t %>% filter(foiIdImport==s$foiId[3]&opId==s$opId[3])
       }  
       if (nrow(data.frame(s))>3) {
-        t4 <- t %>% filter(foiIdImport==s$foiId[4])
+        t4 <- t %>% filter(foiIdImport==s$foiId[4]&opId==s$opId[4])
       }  
       if (nrow(data.frame(s))==2) {
         total<-bind_cols(t1,t2)

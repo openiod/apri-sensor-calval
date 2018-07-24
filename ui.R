@@ -92,16 +92,6 @@ sensorBody <- dashboardBody(
 )
 #dashboardPage(header, sidebar, body)
 navbarPage("OpenIoD.org"
-  , tabPanel("Introductie",
-      tabsetPanel(
-        id = 'panels',
-          tabPanel("Introductie", {
-            includeMarkdown(paste(getwd(),"/www/md/introduction.Rmd",sep=''))
-            })
-          , tabPanel("Instructie", {
-          includeMarkdown(paste(getwd(),"/www/md/instruction.Rmd",sep=''))
-        })
-      ))
   , tabPanel("sensor", sensorBody)
   , tabPanel("Kalibratie")
   , tabPanel("Validatie")
@@ -109,6 +99,16 @@ navbarPage("OpenIoD.org"
     , tabPanel("Projecten")
     , tabPanel("Sensoren", DT::dataTableOutput("wrkSensorTable"))
     , tabPanel("Meetdata")
+  , tabPanel("Introductie",
+             tabsetPanel(
+               id = 'panels',
+               tabPanel("Introductie", {
+                 includeMarkdown(paste(getwd(),"/www/md/introduction.Rmd",sep=''))
+               })
+               , tabPanel("Instructie", {
+                 includeMarkdown(paste(getwd(),"/www/md/instruction.Rmd",sep=''))
+               })
+             ))
   )  
 )
 

@@ -74,7 +74,7 @@ sensorSelect <- function(input, output, session, param1) {
   getFoi<-reactive({
     print('getFoi')
     print(values$foiId)
-    t<-NA
+    t<-NULL
     if (!is.null(values$foiId)) {
       if (!is.na(values$foiId)) {
         t<-filter(getProjectFois(),foiId==values$foiId)
@@ -100,14 +100,14 @@ sensorSelect <- function(input, output, session, param1) {
   })
   getOp<-reactive({
     print('getOp')
-    print(values$opId)
-    t<-NA
+    #print(values$opId)
+    t<-NULL
     if (!is.null(values$opId)) {
       if (!is.na(values$opId)) {
         t<-filter(getFoiOps(),foiId==values$foiId & opId==values$opId)
       }
     } 
-    print(t)
+    #print(t)
     t
   })
   ##### end of get data reactive functions ########
@@ -144,7 +144,7 @@ sensorSelect <- function(input, output, session, param1) {
     if (length(getFoiOps()$foiId)!=0) {
       values$opId <- input$opId
     } else {
-      values$opId <- NA
+      values$opId <- NULL
     } 
     #print(input$opId)  # latest input selected value
     #print(values$opId) # latest input selected value or NA when not available (disabled)
@@ -168,12 +168,13 @@ sensorSelect <- function(input, output, session, param1) {
   output$uiFoiDetails <- renderText({
     print('output uiFoiDetails')
     d<-getFoi()
+    if(is.null(d)) return(NULL)
     t<-NULL
-    if (!is.na(d[1])) {
+#    if (!is.na(d[1])) {
       t<-paste('', d$foiName,' (',d$foiIdShort,')'
                , if (length(getFoiOps()$opId)==0) ". Deze unit heeft geen sensoren geconfigureerd! "
                , sep='')
-    }
+#    }
     t
   })
   output$uiOps = renderUI({
@@ -192,11 +193,16 @@ sensorSelect <- function(input, output, session, param1) {
     print('output opDetails')
     d<-getOp()
     if (length(d)==0) return(NULL)
+#    if (is.na(d[1])) return(NULL)
+    if (nrow(d)==0) return(NULL)
+    print(d)
+    print(nrow(d))
     t<-NULL
     if (!is.null(d)) {
-      if(!is.na(d[1])) {
+      print(d)
+      #if(!is.na(d[1])) {
         t<-paste('', d$opIdPrefix,d$opId,' (',d$opAlias,',',d$opUnit,')',sep='')
-      } 
+      #} 
     }
     t
   })
@@ -240,7 +246,8 @@ sensorSelect <- function(input, output, session, param1) {
     print('sensor selection button event')
     print(get_wrkSensors())
     values$newSensorSelection<-getOp()
-    values$addToSensorSelectionButtonResultMessage<-paste('Sensor ',isolate(values$opId),' toegevoegd aan de sensor selectie',sep="")
+    values$addToSensorSelectionButtonResultMessage<-paste('Sensor '
+                                                          ,isolate(values$opId),' toegevoegd aan de sensor selectie',sep="")
   })  
   
   ##### end of event section #######  
@@ -253,20 +260,30 @@ sensorSelect <- function(input, output, session, param1) {
     if (is.null(values$newSensorSelection)) return(NULL) 
     if (length(values$newSensorSelection)==0) return(NULL)
     
-    
+    print ('opcalFactor')
+    print(values$newSensorSelection)
+    print(getOp())
     # tijdelijk hier?
-    result <- callModule(sensorGetData,idList["name"=="sensorGetData_A"]$id, values$newSensorSelection, get_wrkPeriod(), get_wrkTimeSeries());
+    result <- callModule(sensorGetData,idList["name"=="sensorGetData_A"]$id
+                         , values$newSensorSelection, get_wrkPeriod(), get_wrkTimeSeries());
+    # save original value for (re-)calibration correction
+    tr<-result$result()
+    tr$opValueOrg<-tr$opValue
+    tr$opValue<-(tr$opValueOrg*values$newSensorSelection$opCalFactor)+values$newSensorSelection$opCalIntercept
+    
+    print(tr)
+    
     print(result$result())
     if (is.null(get_wrkData())) {
       print("init sensorDatalist")
-      set_wrkData(result$result())
+      set_wrkData(tr)
     }
     else {
       print("add to sensorDatalist")
-      t<-full_join(get_wrkData(),result$result()
+      t<-full_join(get_wrkData(),tr
                    , by = c("foiName","opName","date"   
                             ,"opValue","opIdPrefix","opIdSep"
-                            , "opId", "opTreshold", "foiIdImport", "type"))
+                            , "opId", "opTreshold", "foiIdImport", "type","opValueOrg"))
       set_wrkData(t)
     }  
     print(summary(get_wrkData()))
@@ -277,9 +294,13 @@ sensorSelect <- function(input, output, session, param1) {
     }
     else {
       #    print(tmpSensorData1)
-      t<-full_join(get_wrkSensors(),values$newSensorSelection, by = c("foiId","foiName","foiIdShort","opId","opIdPrefix","foiIdSep","opIdSep","opAlias","opUnit"))
+      t<-full_join(get_wrkSensors(),values$newSensorSelection
+                   , by = c("foiId","foiName","foiIdShort","opId","opIdPrefix"
+                            ,"foiIdSep","opIdSep","opAlias","opUnit","opCalFactor","opCalIntercept"))
       set_wrkSensors(t)
     }
+    
+    
     values$refreshTable<<-values$refreshTable+1
     values$newSensorSelection<-NULL
     print('refresh table value is:')

@@ -10,7 +10,19 @@ periodSelectUI <- function(id) {
     , selectInput(inputId=ns("environment"),
                     label = "Omgeving"
 #                  , choices=setNames(environmentList[2-6],environmentList[2-6])
-                  , choices=setNames(c('wrkEnvMain','wrkEnvA','wrkEnvB','wrkEnvC','wrkEnvD'),c('Algemeen','1-A','1-B','1-C','1-D'))
+                  , choices=setNames(
+                      c(
+                        #'wrkEnvMain',
+                        'wrkEnvA'
+                        ,'wrkEnvB'
+                        ,'wrkEnvC'
+                        ,'wrkEnvD')
+                      ,c(
+                        #'Algemeen',
+                         '1-A'
+                        ,'1-B'
+                        ,'1-C'
+                        ,'1-D'))
                   , selected='wrkEnvMain'
     )              # Environment 'wrkEnvDefault' is not selectable
     , dateRangeInput(ns("inDateRange"), "Periode:"
