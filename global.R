@@ -38,9 +38,9 @@ source("as_envPlot.R")
 source("as_sensorGetData.R")
 
 # https://shiny.rstudio.com/reference/shiny/1.0.1/shiny-options.html
-options(shiny.trace=FALSE)
-#options(shiny.fullstacktrace=TRUE)
-options(shiny.testmode=FALSE)
+options(shiny.trace=TRUE)
+options(shiny.fullstacktrace=TRUE)
+options(shiny.testmode=TRUE)
 
 #options(error=recover)
 #showMethods()
