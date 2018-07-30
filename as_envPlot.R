@@ -19,6 +19,7 @@ envPlotUI <- function(id) {
         , uiOutput(ns("showPlotPanelA"))
         , conditionalPanel("output.showPlotPanelA == 'A'",
                            { 
+                             pdf(NULL)
                              tagList(
                              # Input: Selector for choosing type of graph/plot
                               selectInput(inputId = ns("plotTypeA"),
