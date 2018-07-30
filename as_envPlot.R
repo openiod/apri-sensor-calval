@@ -169,7 +169,7 @@ envPlot <- function(input, output, session) {
       print(total)
       wrkEnvA$plotDataRegression<-total
     }  
-    output$plotWrkDataAPlot<-NULL
+    output$plotWrkDataAPlot<-renderPlot({NULL})
     #output$plotWrkDataAPlot<-renderPlot({plot_DataStandard(envir=wrkEnvA)})
   })
   

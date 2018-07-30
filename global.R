@@ -22,8 +22,8 @@ library(rlist)
 library(pryr)
 #library(modules)
 #install.packages("future")
-library(future)
-plan(multiprocess) # future plan for multicore (forked R processes (on current machine)), if supported, otherwise multisession: all	background R sessions (on current machine)
+#library(future)
+#plan(multiprocess) # future plan for multicore (forked R processes (on current machine)), if supported, otherwise multisession: all	background R sessions (on current machine)
 library(leaflet)
 
 # include functions
