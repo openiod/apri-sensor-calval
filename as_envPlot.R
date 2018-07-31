@@ -12,6 +12,7 @@ envPlotUI <- function(id) {
           uiOutput(ns("showPlotPanelMain"))
         , conditionalPanel("output.showPlotPanelMain == 'Main'",
                           { 
+                            pdf(NULL)
                             plotOutput(ns("plotWrkDataMainPlot"))
                           }  
           ,ns=ns                
@@ -37,6 +38,7 @@ envPlotUI <- function(id) {
         , uiOutput(ns("showPlotPanelB"))
         , conditionalPanel("output.showPlotPanelB == 'B'",
                            { 
+                             pdf(NULL)
                              tagList(
                                # Input: Selector for choosing type of graph/plot
                                selectInput(inputId = ns("plotTypeB"),
@@ -52,6 +54,7 @@ envPlotUI <- function(id) {
         , uiOutput(ns("showPlotPanelC"))
         , conditionalPanel("output.showPlotPanelC == 'C'",
                            { 
+                             pdf(NULL)
                              tagList(
                                # Input: Selector for choosing type of graph/plot
                                selectInput(inputId = ns("plotTypeC"),
@@ -67,6 +70,7 @@ envPlotUI <- function(id) {
         , uiOutput(ns("showPlotPanelD"))
         , conditionalPanel("output.showPlotPanelD == 'D'",
                            { 
+                             pdf(NULL)
                              tagList(
                                # Input: Selector for choosing type of graph/plot
                                selectInput(inputId = ns("plotTypeD"),
@@ -146,17 +150,25 @@ envPlot <- function(input, output, session) {
         t4 <- t %>% filter(foiIdImport==s$foiId[4]&opId==s$opId[4])
       }  
       if (nrow(data.frame(s))==2) {
+        if (nrow(data.frame(t2))==0) return()
+        print(summary(t1))
+        print(summary(t2))
         total<-bind_cols(t1,t2)
         total$y<-total$opValue
         total$x<-total$opValue1
       }
       if (nrow(data.frame(s))==3) {
+        if (nrow(data.frame(t2))==0) return()
+        if (nrow(data.frame(t3))==0) return()
         total<-bind_cols(t1,t2,t3)
         total$y<-total$opValue
         total$x1<-total$opValue1
         total$x2<-total$opValue2
       }
       if (nrow(data.frame(s))==4) {
+        if (nrow(data.frame(t2))==0) return()
+        if (nrow(data.frame(t3))==0) return()
+        if (nrow(data.frame(t4))==0) return()
         print(summary(t1))
         print(summary(t2))
         print(summary(t3))
@@ -255,6 +267,7 @@ envPlot <- function(input, output, session) {
     print('plot_DataRegression')
     results<-NULL
     data<-envir$plotDataRegression
+    if (is.null(data)) return()
     p<-ggplot(data=data, aes(x=opValue, y=opValue1)) +
       geom_point(shape=1) +    # Use hollow circles
       geom_smooth(method=lm,   # Add linear regression line

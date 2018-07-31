@@ -45,6 +45,7 @@ sensorGetData <- function(input, output, session, selectedSensor, selectedPeriod
   moduleResults$result<-result
   
   observe({
+    if (is.null(moduleResults$result)) return(NULL)
     print('get data module returned results')
     print(summary(moduleResults$result()))
 #    t<-values$result()

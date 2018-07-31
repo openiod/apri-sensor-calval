@@ -31,6 +31,12 @@ get_ApriSensoR_data_SOS <- function(input, output, session, sensorsystem, fois, 
       sep="");
   #    "&date_start=",
   print(url)
+  result<-tryCatch(read.csv(url, header = FALSE, sep = ";", quote = "\""), error=function(e) NULL)
+  if (is.null(result)) return(NULL)
+  if(nrow(result)==0) {
+    print('read csv no records found')
+    return()
+  }
   data <- as.tibble(read.csv(url, header = FALSE, sep = ";", quote = "\""))
   data$date <- as.POSIXct(data$V5, format="%Y-%m-%dT%H:%M")
   data$opValue <- data$V6

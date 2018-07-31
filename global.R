@@ -353,6 +353,19 @@ foiOpList<-tribble( # observable properties related to feature of interest
   , 'LUFTDATENNL12326','PM10','apri-sensor-luftdaten','_','-', 'PM10','µg/m3', 1,1
   , 'LUCHTMEETNETNL01496','PM25','apri-sensor-luchtmeetnet','_','-', 'PM2.5','µg/m3', 1,1
   , 'LUCHTMEETNETNL01496','PM10','apri-sensor-luchtmeetnet','_','-', 'PM10','µg/m3', 1,1
+  , 'LUCHTMEETNETNL01496','NO','apri-sensor-luchtmeetnet','_','-', 'NO','', 1,1
+  , 'LUCHTMEETNETNL01496','NO2','apri-sensor-luchtmeetnet','_','-', 'NO2','', 1,1
+  , 'LUCHTMEETNETNL01496','SO2','apri-sensor-luchtmeetnet','_','-', 'SO2','', 1,1
+  , 'LUCHTMEETNETNL01496','O3','apri-sensor-luchtmeetnet','_','-', 'O3','', 1,1
+  , 'LUCHTMEETNETNL01496','C6H6','apri-sensor-luchtmeetnet','_','-', 'C6H6','', 1,1
+  , 'LUCHTMEETNETNL01496','C7H8','apri-sensor-luchtmeetnet','_','-', 'C7H8','', 1,1
+  , 'LUCHTMEETNETNL01496','C8H10','apri-sensor-luchtmeetnet','_','-', 'C8H10','', 1,1
+  , 'LUCHTMEETNETNL01496','CO','apri-sensor-luchtmeetnet','_','-', 'CO','', 1,1
+  , 'LUCHTMEETNETNL01496','H2S','apri-sensor-luchtmeetnet','_','-', 'H2S','', 1,1
+  , 'LUCHTMEETNETNL01496','PS','apri-sensor-luchtmeetnet','_','-', 'PS','', 1,1
+  , 'LUCHTMEETNETNL01496','NH3','apri-sensor-luchtmeetnet','_','-', 'NH3','', 1,1
+  , 'LUCHTMEETNETNL01496','FN','apri-sensor-luchtmeetnet','_','-', 'FN','', 1,1
+  , 'LUCHTMEETNETNL01496','Offset','apri-sensor-luchtmeetnet','_','-', 'Offset','', 1,1
   , 'KNMI06330','rh','apri-sensor-knmi','10m_','-', '?','?', 1,1
   , 'KNMI06330','ta','apri-sensor-knmi','10m_','-', '?','?', 1,1
   , 'KNMI06330','RH1','apri-sensor-knmi','10m_','-', '?','?', 1,1
@@ -470,9 +483,28 @@ opTresholdList <- tribble(
   "apri-sensor-bme280","-","rHum",15,
   "apri-sensor-luchtmeetnet","-","PM25",15,
   "apri-sensor-luchtmeetnet","-","PM10",15,
+  "apri-sensor-luchtmeetnet","-","NO",15,
+  "apri-sensor-luchtmeetnet","-","NO2",15,
+  "apri-sensor-luchtmeetnet","-","SO2",15,
+  "apri-sensor-luchtmeetnet","-","O3",15,
+  "apri-sensor-luchtmeetnet","-","C6H6",15,
+  "apri-sensor-luchtmeetnet","-","C7H8",15,
+  "apri-sensor-luchtmeetnet","-","C8H10",15,
+  "apri-sensor-luchtmeetnet","-","CO",15,
+  "apri-sensor-luchtmeetnet","-","H2S",15,
+  "apri-sensor-luchtmeetnet","-","PS",15,
+  "apri-sensor-luchtmeetnet","-","NH3",15,
+  "apri-sensor-luchtmeetnet","-","FN",15,
+  "apri-sensor-luchtmeetnet","-","Offset",15,
   "scapeler_dylos","_","raw0",15,
-  "scapeler_dylos","_","raw1",7000
+  "scapeler_dylos","_","raw1",7000,
+  "apri-sensor-ds18b20","_","temperature",15,
+  "apri-sensor-sds011","-","pm25",15,
+  "apri-sensor-sds011","-","pm10",15,
+  "apri-sensor-luftdaten","_","PM25",15,
+  "apri-sensor-luftdaten","_","PM10",15
 )
+
 opTresholdList$opName <- paste(opTresholdList$opIdPrefix
                                ,opTresholdList$opIdSep
                                ,opTresholdList$opId
