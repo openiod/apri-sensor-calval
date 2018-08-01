@@ -288,7 +288,7 @@ envPlot <- function(input, output, session) {
       print(paste('r$p is not a ggplot','for plottype',tmp_envir$values$plotType))
       print(paste('plotly installed: ',is.installed('plotly')) )
       if (is.installed('plotly') ) {
-        output$plotWrkDataAPlotly<-renderPlotly({ggplotly(r$p)})
+        output$plotWrkDataAPlotly<-renderPlotly({r$p})
       } else {
         output$plotWrkDataAPlot<-renderPlot({r$p})
       }
