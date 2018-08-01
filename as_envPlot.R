@@ -25,7 +25,7 @@ envPlotUI <- function(id) {
                              # Input: Selector for choosing type of graph/plot
                               selectInput(inputId = ns("plotTypeA"),
                                          label = "Plot type:",
-                                         choices=c('Standard','Regression')
+                                         choices=c('Standard','Regression','Wind')
                                         )
                              ,
                              plotOutput(ns("plotWrkDataAPlot"))
@@ -105,42 +105,112 @@ envPlot <- function(input, output, session) {
   
   ##### observe section #######  
 
+  ## observe plottype per environment
   observe({
-    if(is.null(get_wrkDataChanged(wrkEnvMain))) return()
-    print('?????????????????????????????????????????????????????????????????')
-    print(get_wrkDataChanged(wrkEnvMain))
-    output$showPlotPanelMain <- renderText('Main')
-    t<-get_wrkData(wrkEnvMain)
-    print('plot data for environment Main')
-    print(t)
-    output$plotWrkDataMainPlot<-renderPlot({
-      #plot(t$date, t$opValue)
-      #p<-ggplot(data=plotData,mapping = aes(x = date, y = sensorValue2))+geom_point() #,aes(x=date, y=sensorValue2))
-      p<-ggplot(data=t, map=aes(x=date, y=opValue)) + #geom_point()
-        geom_point(shape=1) #+     # Use hollow circles
-      #  geom_smooth(method=lm,   # Add linear regression line
-      #              se=FALSE)    # Don't add shaded confidence region
-      # )  
-      p
-      #plot(mtcars$wt, mtcars$mpg)
-    })
+    print('observe: input plotType ')
+    #print(input$plotTypeA)
+    wrkEnvA$values$plotType<-input$plotTypeA
+  })  
+  observe({
+    print('observe: input plotType ')
+    #print(input$plotTypeB)
+    wrkEnvB$values$plotType<-input$plotTypeB
+  })  
+  observe({
+    print('observe: input plotType ')
+    #print(input$plotTypeC)
+    wrkEnvC$values$plotType<-input$plotTypeC
+  })  
+  observe({
+    print('observe: input plotType ')
+    #print(input$plotTypeD)
+    wrkEnvD$values$plotType<-input$plotTypeD
+  })  
+  
+  # when data changed, (re)bind data
+  observe({
+    envir<-wrkEnvA
+    if(is.null(get_wrkDataChanged(envir))) return()
+    if(get_wrkDataChanged(envir)==0) return()
+    print('observe wrkDataChanged')
+    output$showPlotPanelA <- renderText('A')
+    bindOpValues(envir)
+    output$plotWrkDataAPlot<-renderPlot({NULL})
+  })
+  observe({
+    envir<-wrkEnvB
+    if(is.null(get_wrkDataChanged(envir))) return()
+    if(get_wrkDataChanged(envir)==0) return()
+    print('observe wrkDataChanged')
+    output$showPlotPanelB <- renderText('B')
+    bindOpValues(envir)
+    output$plotWrkDataBPlot<-renderPlot({NULL})
+  })
+  observe({
+    envir<-wrkEnvC
+    if(is.null(get_wrkDataChanged(envir))) return()
+    if(get_wrkDataChanged(envir)==0) return()
+    print('observe wrkDataChanged')
+    output$showPlotPanelC <- renderText('C')
+    bindOpValues(envir)
+    output$plotWrkDataCPlot<-renderPlot({NULL})
+  })
+  observe({
+    envir<-wrkEnvD
+    if(is.null(get_wrkDataChanged(envir))) return()
+    if(get_wrkDataChanged(envir)==0) return()
+    print('observe wrkDataChanged')
+    output$showPlotPanelD <- renderText('D')
+    bindOpValues(envir)
+    output$plotWrkDataDPlot<-renderPlot({NULL})
   })
   
-  observe({
-    if(is.null(get_wrkDataChanged(wrkEnvA))) return()
-    if(get_wrkDataChanged(wrkEnvA)==0) return()
-    print('observe wrkDataChanged')
-#    print(get_wrkDataChanged(wrkEnvA))
-    output$showPlotPanelA <- renderText('A')
-    wrkEnvA$plotDataStandard<-get_wrkData(wrkEnvA)
+  # bind data function 
+  bindOpValues <- function(envir) {
+    print('bindOpvalues')
+    envir$plotDataStandard<-get_wrkData(envir)
+    s<-get_wrkSensors(envir)
 
-    isolate({
-      plotType<-input$plotTypeA
-      s<-get_wrkSensors(wrkEnvA)
-    })
+    # Wind data binding
+    if (nrow(data.frame(s))>1) { 
+      t<-envir$plotDataStandard
+      envir$plotDataWind<-NULL
+      windForceOp<-'ff'
+      windDirection<-'dd'
+      print(t)
+      
+      tF <- t %>% filter(opId==windForceOp)
+      print(summary(tF))
+      print(tF)
+      print(length(tF$opId))
+      if (length(tF$opId>0)) {
+        if (nrow(data.frame(tF)>0)) {
+          tD <- t %>% filter(opId==windDirection)
+          if (length(tD$opId>0)) {
+            if (nrow(data.frame(tD)>0)) {
+              tD$windAngle<-(270-tD$opValue)*pi/180
+              tF$windForce<-tF$opValue
+              envir$plotDataWind<-bind_cols(tD,tF)
+              envir$plotDataWind$date <- as.POSIXct(envir$plotDataWind$date) #make sure x are POSIXct and not just characters
+              print(envir$plotDataWind)
+            }
+          }  
+        }
+      }
+    }
     
-    if (nrow(data.frame(s))>1) { #} & plotTyp=='Regression') {
-      t<-wrkEnvA$plotDataStandard
+
+#    p<-plotSticks(total$date,rep(0,3),total$wforce*cos(total$angle),
+#                  total$wforce*sin(total$angle)
+#                  #,yscale=0.4 
+#                  ,ylim=c(-4.0, 12.0)
+#    )    
+    
+    
+    # Regression data binding
+    if (nrow(data.frame(s))>1) { 
+      envir$plotDataRegression<-NULL
+      t<-envir$plotDataStandard
       t1 <- t %>% filter(foiIdImport==s$foiId[1]&opId==s$opId[1])
       t2 <- t %>% filter(foiIdImport==s$foiId[2]&opId==s$opId[2])
       if (nrow(data.frame(s))>2) {
@@ -180,17 +250,15 @@ envPlot <- function(input, output, session) {
         total$x3<-total$opValue3
       }
       print(total)
-      wrkEnvA$plotDataRegression<-total
+      envir$plotDataRegression<-total
     }  
-    output$plotWrkDataAPlot<-renderPlot({NULL})
-    #output$plotWrkDataAPlot<-renderPlot({plot_DataStandard(envir=wrkEnvA)})
-  })
+    
+  }
   
   observe({
     print('observe: input plotType ')
-    print(input$plotTypeA)
     tmp_envir<-wrkEnvA
-    tmp_envir$values$plotType<-input$plotTypeA
+#    tmp_envir$values$plotType<-input$plotTypeA
     print(tmp_envir$values$plotType)
     r<-NULL
     r$p<-NULL
@@ -202,8 +270,12 @@ envPlot <- function(input, output, session) {
     
     if(is.ggplot(r$p)) {
       print('r$p is a ggplot')
-      output$plotWrkDataAPlot<-renderPlot({r$p})
-    
+      if (is.installed('plotly') ) {
+        output$plotWrkDataAPlot<-renderPlotly({ggplotly(r$p)})
+      } else {
+        output$plotWrkDataAPlot<-renderPlot({r$p})
+      }
+      
       if (!is.null(r)&!is.null(r$p)&tmp_envir$values$plotType=='Regression'){
         output$plotWrkDataASummary<-renderPrint({
           print(tmp_envir$values$dataSummary$call)
@@ -214,8 +286,13 @@ envPlot <- function(input, output, session) {
         })
       }
     } else {
-      print('r$p is not a ggplot')
-      output$plotWrkDataAPlot<-renderPlot({r$p})
+      print(paste('r$p is not a ggplot','for plottype',tmp_envir$values$plotType))
+      print(paste('plotly installed: ',is.installed('plotly')) )
+      if (is.installed('plotly') ) {
+        output$plotWrkDataAPlot<-renderPlotly({ggplotly(r$p)})
+      } else {
+        output$plotWrkDataAPlot<-renderPlot({r$p})
+      }
     }
     if (tmp_envir$values$plotType=='Standard'){
       output$plotWrkDataASummary<-renderPrint({
@@ -223,6 +300,8 @@ envPlot <- function(input, output, session) {
       })
     }
   })
+  
+  
   
   observe({
     wrkEnvB$values$plotType<-input$plotTypeB
@@ -258,9 +337,41 @@ envPlot <- function(input, output, session) {
           r<-plot_DataRegression(envir=envir)
         }
       } else {
-        r<-plot_DataStandard(envir=envir)
+        if (envir$values$plotType=='Wind' & !is.null(envir$plotDataWind)) {
+          r<-plot_DataWind(envir=envir)
+        } else {
+          r<-plot_DataStandard(envir=envir)
+        }  
       }
     })
+  }
+  
+  plot_DataWind <- function (envir=NULL) {
+    print('plot_DataWind')
+    results<-NULL
+    data<-envir$plotDataWind
+    print(data)
+    print(data$windAngle)
+    print(data$windForce)
+    print(data$date)
+    #p<-plotSticks(data$date,rep(0,3),data$windForce*cos(data$windAngle),
+#    p<-oce.plot.sticks(data$date,rep(0,3),data$windForce*cos(data$windAngle),
+#                data$windForce*sin(data$windAngle)
+#                #,yscale=0.4 
+#                #,ylim=c(-4.0, 12.0)
+#    )
+    u <- rnorm(100)
+    v <- rnorm(100)
+    t <- seq(0, 100, length.out=100)
+    p<-plotSticks(t, 0, u, v, yscale=5)    
+    
+#    p<-ggplot(data=data, map=aes(x=date, y=windForce)) +
+#              geom_line(aes(colour=foiIdImport,
+#                            group=interaction(foiIdImport,opId,type)) ) +
+#              geom_line(aes(colour=foiIdImport,y=windAngle,
+#                 group=interaction(foiIdImport,opId,type)) )          
+    results$p<-p
+    return(results)
   }
   
   plot_DataRegression <- function (envir=NULL) {
@@ -308,7 +419,7 @@ envPlot <- function(input, output, session) {
     data<-envir$plotDataStandard
     p<-ggplot(data=data, map=aes(x=date, y=opValue)) + 
       geom_point(shape=1) +  # Use hollow circles
-      geom_line(aes(colour=foiIdImport,
+      geom_line(aes(colour=foiIdImport,linetype=opId,
                     group=interaction(foiIdImport,opId,type)
       ),size=0.8)
     results$p<-p

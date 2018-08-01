@@ -92,6 +92,7 @@ sensorSelect <- function(input, output, session, param1) {
     if (!is.null(values$foiId)) {
       if (!is.na(values$foiId)) {
         t<-filter(foiList,foiId==values$foiId) %>%
+          inner_join(foiOfferingList, by = "foiId") %>%
           inner_join(foiOpList, by = "foiId")
       }  
     }  
@@ -297,7 +298,7 @@ sensorSelect <- function(input, output, session, param1) {
     else {
       #    print(tmpSensorData1)
       t<-full_join(get_wrkSensors(),values$newSensorSelection
-                   , by = c("foiId","foiName","foiIdShort","opId","opIdPrefix"
+                   , by = c("foiId","foiName","foiIdShort","foiOffering","foiSensorSystem","opId","opIdPrefix"
                             ,"foiIdSep","opIdSep","opAlias","opUnit","opCalFactor","opCalIntercept"))
       set_wrkSensors(t)
     }

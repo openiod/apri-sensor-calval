@@ -1,5 +1,5 @@
 
-get_ApriSensoR_data_SOS <- function(input, output, session, sensorsystem, fois, ops, period, timeSeries
+get_ApriSensoR_data_SOS <- function(input, output, session, sensorsystem, offering, fois, ops, period, timeSeries
                                     , startDate=NULL
                                     , endDate=NULL) {
   # fois <- "apri-sensor-pmsa003_SCWM68C63A80923C,apri-sensor-pmsa003_SCWM68C63A23401D";
@@ -22,7 +22,7 @@ get_ApriSensoR_data_SOS <- function(input, output, session, sensorsystem, fois, 
   }
   url <- paste("https://openiod.org/SCAPE604/openiod?SERVICE=WPS&REQUEST=Execute&identifier=transform_observation&action=getobservation",
       "&sensorsystem=",sensorsystem,
-      "&offering=offering_0439_initial",
+      "&offering=",offering,
       "&foi=",fois,
       "&op=",ops,
       startEnd,

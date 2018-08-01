@@ -26,8 +26,8 @@ periodSelectUI <- function(id) {
                   , selected='wrkEnvMain'
     )              # Environment 'wrkEnvDefault' is not selectable
     , dateRangeInput(ns("inDateRange"), "Periode:"
-                     , start = Sys.Date()-1
-                     , end = Sys.Date()
+                     , start = Sys.Date() # start of today  
+                     , end = Sys.Date()+1  # all measurements of current date
     )
     # Input: Selector for choosing project ----
     , selectInput(inputId = ns("timeSeriesCode"),

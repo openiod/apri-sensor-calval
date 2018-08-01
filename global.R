@@ -1,3 +1,6 @@
+#Sys.setenv(TZ="Europe/Amsterdam")
+#Sys.getenv("TZ")
+
 
 #install.packages("tidyverse", dependencies = TRUE)
 library(stats) # vóór tidyverse
@@ -7,11 +10,15 @@ library(tidyverse)
 library(shiny)
 library(shinyjs)
 library(shinydashboard)
+#install.packages("plotly")
+# install.packages("plotly", repos="http://cran.rstudio.com/", dependencies=TRUE)
+# library(plotly)
 
 library(httr)
 library(jsonlite)
 library(magrittr)
 library(ggplot2)
+library(oce)
 #install.packages("DT")
 library(DT)
 #library(reshape2)
@@ -306,163 +313,183 @@ foiList <-tribble( # feature of interest
   , 'SCWM5CCF7F6E43EC','Zutphen LO-1','43EC'
   , 'SCWM5CCF7F6E4322','Eefde','4322'
 )
+foiOfferingList <-tribble( # feature of interest offering
+  ~foiId, ~foiOffering
+  , 'SCWM68C63A809492','offering_0439_initial'
+  , 'SCWM68C63A809290','offering_0439_initial'
+  , 'SCWM68C63A808F33','offering_0439_initial'
+  , 'LUCHTMEETNETNL01496','offering_0439_initial'
+  , 'SCRP00000000082fba1b','offering_0439_initial'
+  , 'SCRP00000000082fba1b_SDS011','offering_0439_initial'
+  , 'LUFTDATENNL12326','offering_0439_initial'
+  , 'KNMI06330','offering_knmi10m_initial'
+  , 'SCWM68C63A80923C','offering_0439_initial'
+  , 'SCWM68C63A8093C6','offering_0439_initial'
+  #  , 'SCWM68C63A808FDB','offering_0439_initial'
+  , 'SCWM68C63A8092F5','offering_0439_initial'
+  , 'SCWM68C63A809385','offering_0439_initial'
+  , 'SCWM5CCF7F6E43EC','offering_0439_initial'
+  , 'SCWM5CCF7F6E4322','offering_0439_initial'
+)
+
+
 foiOpList<-tribble( # observable properties related to feature of interest
-  ~foiId, ~opId, ~opIdPrefix, ~foiIdSep, ~opIdSep, ~opAlias, ~opUnit, ~opCalFactor, ~opCalIntercept
-  , 'SCWM68C63A809290','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1.07292,2.73167
-  , 'SCWM68C63A809290','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1.07292,2.73167
-  , 'SCWM68C63A809290','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1.07292,2.73167
-  , 'SCWM68C63A809290','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1.07292,2.73167
-  , 'SCWM68C63A809290','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1.07292,2.73167
-  , 'SCWM68C63A809290','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1.07292,2.73167
-  , 'SCWM68C63A809290','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1.07292,2.73167
-  , 'SCWM68C63A809290','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1.07292,2.73167
-  , 'SCWM68C63A809290','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1.07292,2.73167
-  , 'SCWM68C63A809290','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
-  , 'SCWM68C63A809290','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
-  , 'SCWM68C63A809290','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
-  , 'SCWM68C63A809492','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
-  , 'SCWM68C63A809492','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
-  , 'SCWM68C63A809492','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
-  , 'SCWM68C63A809492','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
-  , 'SCWM68C63A809492','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
-  , 'SCWM68C63A809492','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
-  , 'SCWM68C63A809492','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
-  , 'SCWM68C63A809492','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
-  , 'SCWM68C63A809492','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
-  , 'SCWM68C63A809492','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
-  , 'SCWM68C63A809492','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
-  , 'SCWM68C63A809492','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
-  , 'SCWM68C63A808F33','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
-  , 'SCWM68C63A808F33','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
-  , 'SCWM68C63A808F33','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
-  , 'SCWM68C63A808F33','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
-  , 'SCWM68C63A808F33','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
-  , 'SCWM68C63A808F33','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
-  , 'SCWM68C63A808F33','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
-  , 'SCWM68C63A808F33','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
-  , 'SCWM68C63A808F33','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
-  , 'SCWM68C63A808F33','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
-  , 'SCWM68C63A808F33','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
-  , 'SCWM68C63A808F33','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
-  , 'SCRP00000000082fba1b','temperature','apri-sensor-ds18b20','_','-', 'DS18B20 temp.','°C', 1,1
-  , 'SCRP00000000082fba1b_SDS011','pm25','apri-sensor-sds011','_','-', 'PM2.5','µg/m3', 1,1
-  , 'SCRP00000000082fba1b_SDS011','pm10','apri-sensor-sds011','_','-', 'PM10','µg/m3', 1,1
-  , 'SCRP00000000082fba1b','raw0','scapeler_dylos','_','_', 'part >0.5µm','part./cubic foot', 1,1
-  , 'SCRP00000000082fba1b','raw1','scapeler_dylos','_','_', 'part >2.5µm','part./cubic foot', 1,1
-  , 'LUFTDATENNL12326','PM25','apri-sensor-luftdaten','_','-', 'PM2.5','µg/m3', 1,1
-  , 'LUFTDATENNL12326','PM10','apri-sensor-luftdaten','_','-', 'PM10','µg/m3', 1,1
-  , 'LUCHTMEETNETNL01496','PM25','apri-sensor-luchtmeetnet','_','-', 'PM2.5','µg/m3', 1,1
-  , 'LUCHTMEETNETNL01496','PM10','apri-sensor-luchtmeetnet','_','-', 'PM10','µg/m3', 1,1
-  , 'LUCHTMEETNETNL01496','NO','apri-sensor-luchtmeetnet','_','-', 'NO','', 1,1
-  , 'LUCHTMEETNETNL01496','NO2','apri-sensor-luchtmeetnet','_','-', 'NO2','', 1,1
-  , 'LUCHTMEETNETNL01496','SO2','apri-sensor-luchtmeetnet','_','-', 'SO2','', 1,1
-  , 'LUCHTMEETNETNL01496','O3','apri-sensor-luchtmeetnet','_','-', 'O3','', 1,1
-  , 'LUCHTMEETNETNL01496','C6H6','apri-sensor-luchtmeetnet','_','-', 'C6H6','', 1,1
-  , 'LUCHTMEETNETNL01496','C7H8','apri-sensor-luchtmeetnet','_','-', 'C7H8','', 1,1
-  , 'LUCHTMEETNETNL01496','C8H10','apri-sensor-luchtmeetnet','_','-', 'C8H10','', 1,1
-  , 'LUCHTMEETNETNL01496','CO','apri-sensor-luchtmeetnet','_','-', 'CO','', 1,1
-  , 'LUCHTMEETNETNL01496','H2S','apri-sensor-luchtmeetnet','_','-', 'H2S','', 1,1
-  , 'LUCHTMEETNETNL01496','PS','apri-sensor-luchtmeetnet','_','-', 'PS','', 1,1
-  , 'LUCHTMEETNETNL01496','NH3','apri-sensor-luchtmeetnet','_','-', 'NH3','', 1,1
-  , 'LUCHTMEETNETNL01496','FN','apri-sensor-luchtmeetnet','_','-', 'FN','', 1,1
-  , 'LUCHTMEETNETNL01496','Offset','apri-sensor-luchtmeetnet','_','-', 'Offset','', 1,1
-  , 'KNMI06330','rh','apri-sensor-knmi','10m_','-', '?','?', 1,1
-  , 'KNMI06330','ta','apri-sensor-knmi','10m_','-', '?','?', 1,1
-  , 'KNMI06330','RH1','apri-sensor-knmi','10m_','-', '?','?', 1,1
-  , 'KNMI06330','DH1','apri-sensor-knmi','10m_','-', '?','?', 1,1
-  , 'KNMI06330','ff','apri-sensor-knmi','10m_','-', '?','?', 1,1
-  , 'KNMI06330','dd','apri-sensor-knmi','10m_','-', '?','?', 1,1
+  ~foiId, ~foiSensorSystem, ~opId, ~opIdPrefix, ~foiIdSep, ~opIdSep, ~opAlias, ~opUnit, ~opCalFactor, ~opCalIntercept
+  , 'SCWM68C63A809290','apri-sensor-pmsa003','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1.07292,2.73167
+  , 'SCWM68C63A809290','apri-sensor-pmsa003','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1.07292,2.73167
+  , 'SCWM68C63A809290','apri-sensor-pmsa003','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1.07292,2.73167
+  , 'SCWM68C63A809290','apri-sensor-pmsa003','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1.07292,2.73167
+  , 'SCWM68C63A809290','apri-sensor-pmsa003','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1.07292,2.73167
+  , 'SCWM68C63A809290','apri-sensor-pmsa003','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1.07292,2.73167
+  , 'SCWM68C63A809290','apri-sensor-pmsa003','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1.07292,2.73167
+  , 'SCWM68C63A809290','apri-sensor-pmsa003','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1.07292,2.73167
+  , 'SCWM68C63A809290','apri-sensor-pmsa003','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1.07292,2.73167
+  , 'SCWM68C63A809290','apri-sensor-bme280','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
+  , 'SCWM68C63A809290','apri-sensor-bme280','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
+  , 'SCWM68C63A809290','apri-sensor-bme280','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
+  , 'SCWM68C63A809492','apri-sensor-pmsa003','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
+  , 'SCWM68C63A809492','apri-sensor-pmsa003','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
+  , 'SCWM68C63A809492','apri-sensor-pmsa003','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
+  , 'SCWM68C63A809492','apri-sensor-pmsa003','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
+  , 'SCWM68C63A809492','apri-sensor-pmsa003','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
+  , 'SCWM68C63A809492','apri-sensor-pmsa003','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
+  , 'SCWM68C63A809492','apri-sensor-pmsa003','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
+  , 'SCWM68C63A809492','apri-sensor-pmsa003','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
+  , 'SCWM68C63A809492','apri-sensor-pmsa003','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
+  , 'SCWM68C63A809492','apri-sensor-bme280','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
+  , 'SCWM68C63A809492','apri-sensor-bme280','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
+  , 'SCWM68C63A809492','apri-sensor-bme280','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
+  , 'SCWM68C63A808F33','apri-sensor-pmsa003','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
+  , 'SCWM68C63A808F33','apri-sensor-pmsa003','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
+  , 'SCWM68C63A808F33','apri-sensor-pmsa003','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
+  , 'SCWM68C63A808F33','apri-sensor-pmsa003','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
+  , 'SCWM68C63A808F33','apri-sensor-pmsa003','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
+  , 'SCWM68C63A808F33','apri-sensor-pmsa003','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
+  , 'SCWM68C63A808F33','apri-sensor-pmsa003','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
+  , 'SCWM68C63A808F33','apri-sensor-pmsa003','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
+  , 'SCWM68C63A808F33','apri-sensor-pmsa003','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
+  , 'SCWM68C63A808F33','apri-sensor-bme280','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
+  , 'SCWM68C63A808F33','apri-sensor-bme280','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
+  , 'SCWM68C63A808F33','apri-sensor-bme280','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
+  , 'SCRP00000000082fba1b','apri-sensor-ds18b20','temperature','apri-sensor-ds18b20','_','-', 'DS18B20 temp.','°C', 1,1
+  , 'SCRP00000000082fba1b_SDS011','apri-sensor-sds011','pm25','apri-sensor-sds011','_','-', 'PM2.5','µg/m3', 1,1
+  , 'SCRP00000000082fba1b_SDS011','apri-sensor-sds011','pm10','apri-sensor-sds011','_','-', 'PM10','µg/m3', 1,1
+  , 'SCRP00000000082fba1b','scapeler_dylos','raw0','scapeler_dylos','_','_', 'part >0.5µm','part./cubic foot', 1,1
+  , 'SCRP00000000082fba1b','scapeler_dylos','raw1','scapeler_dylos','_','_', 'part >2.5µm','part./cubic foot', 1,1
+  , 'LUFTDATENNL12326','apri-sensor-luftdaten','PM25','apri-sensor-luftdaten','_','-', 'PM2.5','µg/m3', 1,1
+  , 'LUFTDATENNL12326','apri-sensor-luftdaten','PM10','apri-sensor-luftdaten','_','-', 'PM10','µg/m3', 1,1
+  , 'LUCHTMEETNETNL01496','apri-sensor-luchtmeetnet','PM25','apri-sensor-luchtmeetnet','_','-', 'PM2.5','µg/m3', 1,1
+  , 'LUCHTMEETNETNL01496','apri-sensor-luchtmeetnet','PM10','apri-sensor-luchtmeetnet','_','-', 'PM10','µg/m3', 1,1
+  , 'LUCHTMEETNETNL01496','apri-sensor-luchtmeetnet','NO','apri-sensor-luchtmeetnet','_','-', 'NO','', 1,1
+  , 'LUCHTMEETNETNL01496','apri-sensor-luchtmeetnet','NO2','apri-sensor-luchtmeetnet','_','-', 'NO2','', 1,1
+  , 'LUCHTMEETNETNL01496','apri-sensor-luchtmeetnet','SO2','apri-sensor-luchtmeetnet','_','-', 'SO2','', 1,1
+  , 'LUCHTMEETNETNL01496','apri-sensor-luchtmeetnet','O3','apri-sensor-luchtmeetnet','_','-', 'O3','', 1,1
+  , 'LUCHTMEETNETNL01496','apri-sensor-luchtmeetnet','C6H6','apri-sensor-luchtmeetnet','_','-', 'C6H6','', 1,1
+  , 'LUCHTMEETNETNL01496','apri-sensor-luchtmeetnet','C7H8','apri-sensor-luchtmeetnet','_','-', 'C7H8','', 1,1
+  , 'LUCHTMEETNETNL01496','apri-sensor-luchtmeetnet','C8H10','apri-sensor-luchtmeetnet','_','-', 'C8H10','', 1,1
+  , 'LUCHTMEETNETNL01496','apri-sensor-luchtmeetnet','CO','apri-sensor-luchtmeetnet','_','-', 'CO','', 1,1
+  , 'LUCHTMEETNETNL01496','apri-sensor-luchtmeetnet','H2S','apri-sensor-luchtmeetnet','_','-', 'H2S','', 1,1
+  , 'LUCHTMEETNETNL01496','apri-sensor-luchtmeetnet','PS','apri-sensor-luchtmeetnet','_','-', 'PS','', 1,1
+  , 'LUCHTMEETNETNL01496','apri-sensor-luchtmeetnet','NH3','apri-sensor-luchtmeetnet','_','-', 'NH3','', 1,1
+  , 'LUCHTMEETNETNL01496','apri-sensor-luchtmeetnet','FN','apri-sensor-luchtmeetnet','_','-', 'FN','', 1,1
+  , 'LUCHTMEETNETNL01496','apri-sensor-luchtmeetnet','Offset','apri-sensor-luchtmeetnet','_','-', 'Offset','', 1,1
+  , 'KNMI06330','apri-sensor-knmi10m','rh','apri-sensor-knmi','10m_','-', '?','?', 1,1
+  , 'KNMI06330','apri-sensor-knmi10m','ta','apri-sensor-knmi','10m_','-', '?','?', 1,1
+  , 'KNMI06330','apri-sensor-knmi10m','RH1','apri-sensor-knmi','10m_','-', '?','?', 1,1
+  , 'KNMI06330','apri-sensor-knmi10m','DH1','apri-sensor-knm','10m_','-', '?','?', 1,1
+  , 'KNMI06330','apri-sensor-knmi10m','ff','apri-sensor-knmi','10m_','-', '?','?', 1,1
+  , 'KNMI06330','apri-sensor-knmi10m','dd','apri-sensor-knmi','10m_','-', '?','?', 1,1
 
-  , 'SCWM68C63A80923C','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
-  , 'SCWM68C63A80923C','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
-  , 'SCWM68C63A80923C','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
-  , 'SCWM68C63A80923C','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
-  , 'SCWM68C63A80923C','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
-  , 'SCWM68C63A80923C','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
-  , 'SCWM68C63A80923C','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
-  , 'SCWM68C63A80923C','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
-  , 'SCWM68C63A80923C','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
-  , 'SCWM68C63A80923C','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
-  , 'SCWM68C63A80923C','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
-  , 'SCWM68C63A80923C','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
+  , 'SCWM68C63A80923C','apri-sensor-pmsa003','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
+  , 'SCWM68C63A80923C','apri-sensor-pmsa003','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
+  , 'SCWM68C63A80923C','apri-sensor-pmsa003','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
+  , 'SCWM68C63A80923C','apri-sensor-pmsa003','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
+  , 'SCWM68C63A80923C','apri-sensor-pmsa003','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
+  , 'SCWM68C63A80923C','apri-sensor-pmsa003','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
+  , 'SCWM68C63A80923C','apri-sensor-pmsa003','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
+  , 'SCWM68C63A80923C','apri-sensor-pmsa003','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
+  , 'SCWM68C63A80923C','apri-sensor-pmsa003','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
+  , 'SCWM68C63A80923C','apri-sensor-bme280','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
+  , 'SCWM68C63A80923C','apri-sensor-bme280','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
+  , 'SCWM68C63A80923C','apri-sensor-bme280','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
   
-  , 'SCWM68C63A808FDB','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
-  , 'SCWM68C63A808FDB','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
-  , 'SCWM68C63A808FDB','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
-  , 'SCWM68C63A808FDB','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
-  , 'SCWM68C63A808FDB','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
-  , 'SCWM68C63A808FDB','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
-  , 'SCWM68C63A808FDB','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
-  , 'SCWM68C63A808FDB','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
-  , 'SCWM68C63A808FDB','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
-#  , 'SCWM68C63A808FDB','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
-#  , 'SCWM68C63A808FDB','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
-#  , 'SCWM68C63A808FDB','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
+  , 'SCWM68C63A808FDB','apri-sensor-pmsa003','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
+  , 'SCWM68C63A808FDB','apri-sensor-pmsa003','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
+  , 'SCWM68C63A808FDB','apri-sensor-pmsa003','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
+  , 'SCWM68C63A808FDB','apri-sensor-pmsa003','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
+  , 'SCWM68C63A808FDB','apri-sensor-pmsa003','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
+  , 'SCWM68C63A808FDB','apri-sensor-pmsa003','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
+  , 'SCWM68C63A808FDB','apri-sensor-pmsa003','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
+  , 'SCWM68C63A808FDB','apri-sensor-pmsa003','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
+  , 'SCWM68C63A808FDB','apri-sensor-pmsa003','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
+#  , 'SCWM68C63A808FDB','apri-sensor-bme280','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
+#  , 'SCWM68C63A808FDB','apri-sensor-bme280','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
+#  , 'SCWM68C63A808FDB','apri-sensor-bme280','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
 
-  , 'SCWM68C63A8093C6','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
-  , 'SCWM68C63A8093C6','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
-  , 'SCWM68C63A8093C6','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
-  , 'SCWM68C63A8093C6','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
-  , 'SCWM68C63A8093C6','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
-  , 'SCWM68C63A8093C6','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
-  , 'SCWM68C63A8093C6','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
-  , 'SCWM68C63A8093C6','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
-  , 'SCWM68C63A8093C6','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
-#  , 'SCWM68C63A8093C6','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
-#  , 'SCWM68C63A8093C6','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
-#  , 'SCWM68C63A8093C6','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
+  , 'SCWM68C63A8093C6','apri-sensor-pmsa003','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
+  , 'SCWM68C63A8093C6','apri-sensor-pmsa003','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
+  , 'SCWM68C63A8093C6','apri-sensor-pmsa003','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
+  , 'SCWM68C63A8093C6','apri-sensor-pmsa003','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
+  , 'SCWM68C63A8093C6','apri-sensor-pmsa003','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
+  , 'SCWM68C63A8093C6','apri-sensor-pmsa003','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
+  , 'SCWM68C63A8093C6','apri-sensor-pmsa003','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
+  , 'SCWM68C63A8093C6','apri-sensor-pmsa003','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
+  , 'SCWM68C63A8093C6','apri-sensor-pmsa003','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
+#  , 'SCWM68C63A8093C6','apri-sensor-bme280','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
+#  , 'SCWM68C63A8093C6','apri-sensor-bme280','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
+#  , 'SCWM68C63A8093C6','apri-sensor-bme280','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
 
-  , 'SCWM68C63A8092F5','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
-  , 'SCWM68C63A8092F5','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
-  , 'SCWM68C63A8092F5','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
-  , 'SCWM68C63A8092F5','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
-  , 'SCWM68C63A8092F5','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
-  , 'SCWM68C63A8092F5','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
-  , 'SCWM68C63A8092F5','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
-  , 'SCWM68C63A8092F5','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
-  , 'SCWM68C63A8092F5','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
-  , 'SCWM68C63A8092F5','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
-  , 'SCWM68C63A8092F5','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
-  , 'SCWM68C63A8092F5','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
+  , 'SCWM68C63A8092F5','apri-sensor-pmsa003','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
+  , 'SCWM68C63A8092F5','apri-sensor-pmsa003','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
+  , 'SCWM68C63A8092F5','apri-sensor-pmsa003','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
+  , 'SCWM68C63A8092F5','apri-sensor-pmsa003','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
+  , 'SCWM68C63A8092F5','apri-sensor-pmsa003','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
+  , 'SCWM68C63A8092F5','apri-sensor-pmsa003','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
+  , 'SCWM68C63A8092F5','apri-sensor-pmsa003','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
+  , 'SCWM68C63A8092F5','apri-sensor-pmsa003','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
+  , 'SCWM68C63A8092F5','apri-sensor-pmsa003','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
+  , 'SCWM68C63A8092F5','apri-sensor-bme280','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
+  , 'SCWM68C63A8092F5','apri-sensor-bme280','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
+  , 'SCWM68C63A8092F5','apri-sensor-bme280','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
 
-  , 'SCWM5CCF7F6E4322','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
-  , 'SCWM5CCF7F6E4322','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
-  , 'SCWM5CCF7F6E4322','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
-  , 'SCWM5CCF7F6E4322','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
-  , 'SCWM5CCF7F6E4322','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
-  , 'SCWM5CCF7F6E4322','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
-  , 'SCWM5CCF7F6E4322','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
-  , 'SCWM5CCF7F6E4322','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
-  , 'SCWM5CCF7F6E4322','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
-  , 'SCWM5CCF7F6E4322','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
-  , 'SCWM5CCF7F6E4322','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
-  , 'SCWM5CCF7F6E4322','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
+  , 'SCWM5CCF7F6E4322','apri-sensor-pmsa003','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
+  , 'SCWM5CCF7F6E4322','apri-sensor-pmsa003','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
+  , 'SCWM5CCF7F6E4322','apri-sensor-pmsa003','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
+  , 'SCWM5CCF7F6E4322','apri-sensor-pmsa003','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
+  , 'SCWM5CCF7F6E4322','apri-sensor-pmsa003','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
+  , 'SCWM5CCF7F6E4322','apri-sensor-pmsa003','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
+  , 'SCWM5CCF7F6E4322','apri-sensor-pmsa003','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
+  , 'SCWM5CCF7F6E4322','apri-sensor-pmsa003','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
+  , 'SCWM5CCF7F6E4322','apri-sensor-pmsa003','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
+  , 'SCWM5CCF7F6E4322','apri-sensor-bme280','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
+  , 'SCWM5CCF7F6E4322','apri-sensor-bme280','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
+  , 'SCWM5CCF7F6E4322','apri-sensor-bme280','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
 
-  , 'SCWM5CCF7F6E43EC','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
-  , 'SCWM5CCF7F6E43EC','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
-  , 'SCWM5CCF7F6E43EC','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
-  , 'SCWM5CCF7F6E43EC','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
-  , 'SCWM5CCF7F6E43EC','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
-  , 'SCWM5CCF7F6E43EC','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
-  , 'SCWM5CCF7F6E43EC','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
-  , 'SCWM5CCF7F6E43EC','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
-  , 'SCWM5CCF7F6E43EC','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
-  , 'SCWM5CCF7F6E43EC','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
-  , 'SCWM5CCF7F6E43EC','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
-  , 'SCWM5CCF7F6E43EC','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1  
+  , 'SCWM5CCF7F6E43EC','apri-sensor-pmsa003','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
+  , 'SCWM5CCF7F6E43EC','apri-sensor-pmsa003','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
+  , 'SCWM5CCF7F6E43EC','apri-sensor-pmsa003','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
+  , 'SCWM5CCF7F6E43EC','apri-sensor-pmsa003','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
+  , 'SCWM5CCF7F6E43EC','apri-sensor-pmsa003','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
+  , 'SCWM5CCF7F6E43EC','apri-sensor-pmsa003','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
+  , 'SCWM5CCF7F6E43EC','apri-sensor-pmsa003','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
+  , 'SCWM5CCF7F6E43EC','apri-sensor-pmsa003','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
+  , 'SCWM5CCF7F6E43EC','apri-sensor-pmsa003','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
+  , 'SCWM5CCF7F6E43EC','apri-sensor-bme280','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
+  , 'SCWM5CCF7F6E43EC','apri-sensor-bme280','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
+  , 'SCWM5CCF7F6E43EC','apri-sensor-bme280','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1  
 
-, 'SCWM68C63A809385','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
-, 'SCWM68C63A809385','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
-, 'SCWM68C63A809385','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
-, 'SCWM68C63A809385','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
-, 'SCWM68C63A809385','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
-, 'SCWM68C63A809385','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
-, 'SCWM68C63A809385','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
-, 'SCWM68C63A809385','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
-, 'SCWM68C63A809385','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
-, 'SCWM68C63A809385','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
-, 'SCWM68C63A809385','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
-, 'SCWM68C63A809385','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
+, 'SCWM68C63A809385','apri-sensor-pmsa003','concPM1_0_CF1','apri-sensor-pmsa003','_','-', 'PM1','µg/m3', 1,1
+, 'SCWM68C63A809385','apri-sensor-pmsa003','concPM2_5_CF1','apri-sensor-pmsa003','_','-', 'PM2.5','µg/m3', 1,1
+, 'SCWM68C63A809385','apri-sensor-pmsa003','concPM10_0_CF1','apri-sensor-pmsa003','_','-', 'PM10','µg/m3', 1,1
+, 'SCWM68C63A809385','apri-sensor-pmsa003','rawGt0_3um','apri-sensor-pmsa003','_','-', 'raw<0.3µm','part.', 1,1
+, 'SCWM68C63A809385','apri-sensor-pmsa003','rawGt0_5um','apri-sensor-pmsa003','_','-', 'raw<0.5µm','part.', 1,1
+, 'SCWM68C63A809385','apri-sensor-pmsa003','rawGt1_0um','apri-sensor-pmsa003','_','-', 'raw<1µm','part.', 1,1
+, 'SCWM68C63A809385','apri-sensor-pmsa003','rawGt2_5um','apri-sensor-pmsa003','_','-', 'raw<2.5µm','part.', 1,1
+, 'SCWM68C63A809385','apri-sensor-pmsa003','rawGt5_0um','apri-sensor-pmsa003','_','-', 'raw<5µm','part.', 1,1
+, 'SCWM68C63A809385','apri-sensor-pmsa003','rawGt10_0um','apri-sensor-pmsa003','_','-', 'raw<10µm','part.', 1,1
+, 'SCWM68C63A809385','apri-sensor-bme280','pressure','apri-sensor-bme280','_','-', 'Luchtdruk','hPa', 1,1
+, 'SCWM68C63A809385','apri-sensor-bme280','temperature','apri-sensor-bme280','_','-', 'Temperatuur','Celc', 1,1
+, 'SCWM68C63A809385','apri-sensor-bme280','rHum','apri-sensor-bme280','_','-', 'rLuchtvochtigheid','%RV', 1,1
     )
 opTresholdList <- tribble(
   ~opIdPrefix, ~opIdSep, ~opId, ~opTreshold,
@@ -502,7 +529,13 @@ opTresholdList <- tribble(
   "apri-sensor-sds011","-","pm25",15,
   "apri-sensor-sds011","-","pm10",15,
   "apri-sensor-luftdaten","_","PM25",15,
-  "apri-sensor-luftdaten","_","PM10",15
+  "apri-sensor-luftdaten","_","PM10",15,
+  "apri-sensor-knmi","-","rh",15,
+  "apri-sensor-knmi","-","ta",15,
+  "apri-sensor-knmi","-","RH1",15,
+  "apri-sensor-knmi","-","DH1",15,
+  "apri-sensor-knmi","-","ff",15,
+  "apri-sensor-knmi","-","dd",15
 )
 
 opTresholdList$opName <- paste(opTresholdList$opIdPrefix
