@@ -27,10 +27,9 @@ envPlotUI <- function(id) {
                                          label = "Plot type:",
                                          choices=c('Standard','Regression','Wind')
                                         )
-                             ,
-                             plotOutput(ns("plotWrkDataAPlot"))
-                             ,
-                             verbatimTextOutput(ns("plotWrkDataASummary"))
+                             , plotOutput(ns("plotWrkDataAPlot"))
+                             , plotlyOutput(ns("plotWrkDataAPlotly"))
+                             , verbatimTextOutput(ns("plotWrkDataASummary"))
                              )
                            }  
                            ,ns=ns                
@@ -271,7 +270,7 @@ envPlot <- function(input, output, session) {
     if(is.ggplot(r$p)) {
       print('r$p is a ggplot')
       if (is.installed('plotly') ) {
-        output$plotWrkDataAPlot<-renderPlotly({ggplotly(r$p)})
+        output$plotWrkDataAPlotly<-renderPlotly({ggplotly(r$p)})
       } else {
         output$plotWrkDataAPlot<-renderPlot({r$p})
       }
@@ -289,7 +288,7 @@ envPlot <- function(input, output, session) {
       print(paste('r$p is not a ggplot','for plottype',tmp_envir$values$plotType))
       print(paste('plotly installed: ',is.installed('plotly')) )
       if (is.installed('plotly') ) {
-        output$plotWrkDataAPlot<-renderPlotly({ggplotly(r$p)})
+        output$plotWrkDataAPlotly<-renderPlotly({ggplotly(r$p)})
       } else {
         output$plotWrkDataAPlot<-renderPlot({r$p})
       }
