@@ -14,6 +14,15 @@ library(shinydashboard)
 # install.packages("plotly", repos="http://cran.rstudio.com/", dependencies=TRUE)
 # library(plotly)
 
+# https://shiny.rstudio.com/reference/shiny/1.0.1/shiny-options.html
+options(shiny.trace=TRUE)
+options(shiny.fullstacktrace=FALSE)
+options(shiny.testmode=TRUE)
+options(shiny.reactlog=TRUE) 
+options(shiny.error = browser)
+
+
+
 library(httr)
 library(jsonlite)
 library(magrittr)
@@ -44,10 +53,6 @@ source("as_envSummary.R")
 source("as_envPlot.R")
 source("as_sensorGetData.R")
 
-# https://shiny.rstudio.com/reference/shiny/1.0.1/shiny-options.html
-options(shiny.trace=TRUE)
-options(shiny.fullstacktrace=TRUE)
-options(shiny.testmode=TRUE)
 
 #options(error=recover)
 #showMethods()
