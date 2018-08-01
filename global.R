@@ -10,9 +10,6 @@ library(tidyverse)
 library(shiny)
 library(shinyjs)
 library(shinydashboard)
-#install.packages("plotly")
-# install.packages("plotly", repos="http://cran.rstudio.com/", dependencies=TRUE)
-# library(plotly)
 
 # https://shiny.rstudio.com/reference/shiny/1.0.1/shiny-options.html
 options(shiny.trace=TRUE)
@@ -44,6 +41,12 @@ library(leaflet)
 
 # include functions
 sapply(list.files("functions/"), function(x) source(paste0("functions/", unname(x))))
+
+#install.packages("plotly")
+# install.packages("plotly", repos="http://cran.rstudio.com/", dependencies=TRUE)
+if (is.installed('plotly') ) {
+  library(plotly)
+}
 # include modules
 source("config.R")
 source("ApriSensor.R")
